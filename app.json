@@ -10,6 +10,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#231e1c"
     },
+    "androidStatusBar": {
+      "barStyle": "light-content"
+    },
+    "androidNavigationBar": {
+      "backgroundColor": "#000000"
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
