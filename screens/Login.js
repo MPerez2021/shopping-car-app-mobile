@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { View, StyleSheet, Text, Dimensions, KeyboardAvoidingView } from 'react-native'
 import { Button, HelperText, TextInput, Subheading, Title } from 'react-native-paper';
-import { auth, db } from '../firebase';
-import { getDoc, doc, setDoc,getFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 import { useFocusEffect } from '@react-navigation/core';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -20,10 +19,7 @@ const Login = ({ navigation }) => {
     const auth = getAuth()
     const db = getFirestore()
     function signIn() {
-        signInWithEmailAndPassword(auth, email, password).then((userData) => {
-         /*    getDoc(doc(db, 'users', userData.user.uid)).then(data => {
-                return setRole(data.data().role)
-            }) */
+        signInWithEmailAndPassword(auth, email, password).then(() => {
             navigation.navigate('Inicio')
         }).catch(error => {
             //alert(error.message)
@@ -34,8 +30,7 @@ const Login = ({ navigation }) => {
                 setVerifyEmailAndPassword(true)
             }
         })
-    }
-
+    }  
     useFocusEffect(
         React.useCallback(() => {
             setEmail('')
@@ -44,9 +39,6 @@ const Login = ({ navigation }) => {
             setVerifyEmailAndPassword(false)
         }, [])
     )
-
-
-
     return (
         <View style={styles.container}>
             <MaterialCommunityIcons name="shield-account" size={150} color="#fd7753" />
@@ -79,7 +71,6 @@ const Login = ({ navigation }) => {
                     left={<TextInput.Icon name="lock" color={'white'} />}
                     onChangeText={text => setPassword(text)}
                 />
-
             </KeyboardAvoidingView>
             <Button mode="contained" uppercase={true} style={styles.button} onPress={signIn}>
                 Iniciar Sesión
@@ -120,12 +111,10 @@ const styles = StyleSheet.create({
         height: 60,
         marginBottom: 10,
         backgroundColor: '#2e2a29'
-
     },
     helperTextInputs: {
         marginBottom: 10,
         color: 'red'
     }
 })
-
 export default Login

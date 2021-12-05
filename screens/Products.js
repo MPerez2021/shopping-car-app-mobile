@@ -15,8 +15,7 @@ const Products = ({ navigation }) => {
     const [counter, setCounter] = React.useState({ data: [] })
     const [visible, setVisible] = React.useState(false);
     const db = getFirestore()
-    const auth = getAuth()
-
+    const auth = getAuth()   
     useEffect(() => {
         getProductData()
         const getUser = onSnapshot(doc(db, 'users', auth.currentUser.uid), (info) => {
@@ -27,7 +26,6 @@ const Products = ({ navigation }) => {
             });
             setCounter({ data: x })
         })
-
         return () => {
             getUser()
             getProductData()
@@ -89,7 +87,7 @@ const Products = ({ navigation }) => {
                 </View>
             }
             <Portal>
-                <Modal visible={visible} contentContainerStyle={styles.containerStyle}>
+                <Modal visible={visible} contentContainerStyle={styles.containerStyle} dismissable={false}>
                     <ScrollView >
                         <View style={styles.modal}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -118,7 +116,7 @@ const Products = ({ navigation }) => {
 
                             {userDataProducts.length === 0
                                 ?
-                                <Text style={{ color: 'grey', fontSize: 20, marginBottom: 15, textAlign:'justify' }}>
+                                <Text style={{ color: 'grey', fontSize: 20, marginBottom: 15, textAlign: 'justify' }}>
                                     Aún no tienes productos en tu carrito, te invitamos que sigas visitando nuestra tienda</Text>
                                 :
                                 <View>
@@ -156,10 +154,10 @@ const Products = ({ navigation }) => {
                 onPress={() => setVisible(true)}>
                 Ver carrito {userDataProducts.length > 0 ? userDataProducts.length : null}
             </Button>
-            <Button icon="cart-plus" mode="contained"
+            <Button icon="comment-text-multiple-outline" mode="contained"
                 uppercase={false}
                 style={{ backgroundColor: '#fd7753', marginBottom: 20 }}
-                onPress={() => navigation.navigate('Local', { screen: 'Store' })}>Chat
+                onPress={() => navigation.navigate('Local', { screen: 'Store' })}>Comentarios
             </Button>
             <FlatList
                 data={productData}
@@ -185,7 +183,7 @@ const Products = ({ navigation }) => {
                                             setDoc(doc(db, 'users', auth.currentUser.uid), {
                                                 products: userDataProducts
                                             }, { merge: true })
-                                            ToastAndroid.show('Producto añadido al carrito', ToastAndroid.SHORT)
+                                            ToastAndroid.show( item.name + ' añadido al carrito', ToastAndroid.SHORT)
                                         }}>
                                         Añadir
                                     </Button>

@@ -2,8 +2,8 @@ import React, { useEffect } from 'react'
 import { View, Text, Dimensions, StyleSheet, Image, ToastAndroid } from 'react-native'
 import { Title, Button } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
-import { getDocs, doc, setDoc, getDoc, collection, onSnapshot, getFirestore } from "firebase/firestore";
-import { getAuth, signOut, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, getDoc, getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -16,24 +16,20 @@ const ShopDetail = () => {
 
     useEffect(() => {
         lg()
-        let x = []
-        userDataProducts.forEach(() => {
-            x.push(1)
-        });
-        setCounter({ data: x })
         return () => {
-
         }
     }, [])
 
 
     async function lg() {
-        /*  getDoc(doc(db, 'users', auth.currentUser.uid), (info) => {
-             setUserDataProducts(info.data().products)
-         }) */
         const docRef = doc(db, "users", auth.currentUser.uid);
         const docSnap = await getDoc(docRef).then((info) => {
             setUserDataProducts(info.data().products)
+            let x = []
+            info.data().products.forEach(() => {
+                x.push(1)
+            });
+            setCounter({ data: x })
         });
     }
 
@@ -54,14 +50,12 @@ const ShopDetail = () => {
 
     function calculateTotal() {
         let total = 0
- 
         userDataProducts.forEach((product, index) => {
             total = total + (product.cost * counter.data[index])
         })
         return total.toFixed(2)
     }
     return (
-
         <View style={styles.container}>
             {userDataProducts.length !== 0 && userDataProducts.map((userData, index) =>
                 <View style={styles.product}>
