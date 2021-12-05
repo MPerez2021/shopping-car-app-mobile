@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "shoppingcar-app",
-    "slug": "shoppingcar-app",
+    "name": "Go Market",
+    "slug": "go_market",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon22.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splashScreen1.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#231e1c"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -20,9 +20,10 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.mateo_perez.go_market",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/iconShop.png",
+        "backgroundColor": "#231e1c"
       }
     },
     "web": {

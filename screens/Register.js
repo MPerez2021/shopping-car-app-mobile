@@ -1,14 +1,12 @@
 import React from 'react'
-import { View, StyleSheet,ToastAndroid, Dimensions, KeyboardAvoidingView } from 'react-native'
-import { Button, HelperText, TextInput } from 'react-native-paper';
+import { View, StyleSheet, ToastAndroid, Dimensions, KeyboardAvoidingView } from 'react-native'
+import { Button, HelperText, TextInput, ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/core';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { setDoc, getFirestore, doc} from "firebase/firestore";
-
+import { setDoc, getFirestore, doc } from "firebase/firestore";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
 const Register = ({ navigation }) => {
     const [name, setName] = React.useState('')
     const [email, setEmail] = React.useState('')
@@ -16,7 +14,7 @@ const Register = ({ navigation }) => {
     const [incompleteData, setIncompleteData] = React.useState(false)
     const [emailAlreadyExists, setEmailAlreadyExists] = React.useState(false)
     const [weakPassword, setWeakPassword] = React.useState(false)
-    const db = getFirestore()
+    const [loading, setLoading] = React.useState(false)
     useFocusEffect(
         React.useCallback(() => {
             setName('')
@@ -25,10 +23,14 @@ const Register = ({ navigation }) => {
             setIncompleteData(false)
             setEmailAlreadyExists(false)
             setWeakPassword(false)
+            setLoading(false)
         }, [])
     )
+
     const register = () => {
+        setLoading(true)
         const auth = getAuth()
+        const db = getFirestore()
         createUserWithEmailAndPassword(auth, email, password).then((userCredentials) => {
             var user = userCredentials.user
             setDoc(doc(db, 'users', user.uid), {
@@ -39,32 +41,43 @@ const Register = ({ navigation }) => {
             updateProfile(auth.currentUser, {
                 displayName: name
             }).catch((error) => {
-                //alert(error.message)
+
             })
             navigation.navigate('Inicio');
             ToastAndroid.show('Usuario registrado, bienvenido a Proyect Papelery', ToastAndroid.LONG)
+            setLoading(false)
         }).catch(error => {
             /* alert(error.message) */
             switch (error.code) {
-                case 'auth/invalid-email' || 'auth/internal-error':
+                case 'auth/invalid-email':
                     setIncompleteData(true)
                     setEmailAlreadyExists(false)
                     setWeakPassword(false)
+                    setLoading(false)
+                    break;
+                case 'auth/internal-error':
+                    setIncompleteData(true)
+                    setEmailAlreadyExists(false)
+                    setWeakPassword(false)
+                    setLoading(false)
                     break;
                 case 'auth/missing-email':
                     setIncompleteData(true)
                     setEmailAlreadyExists(false)
                     setWeakPassword(false)
+                    setLoading(false)
                     break;
                 case 'auth/email-already-in-use':
                     setEmailAlreadyExists(true)
                     setIncompleteData(false)
                     setWeakPassword(false)
+                    setLoading(false)
                     break;
                 case 'auth/weak-password':
                     setWeakPassword(true)
                     setIncompleteData(false)
                     setEmailAlreadyExists(false)
+                    setLoading(false)
                 default:
                     break;
             }
@@ -88,7 +101,7 @@ const Register = ({ navigation }) => {
                 <HelperText type='error' style={{ marginBottom: 10, color: 'red' }}>
                     La contraseña debe tener al menos 6 caracteres
                 </HelperText> : null}
-            <KeyboardAvoidingView style={{padding: 10}} behavior="padding">
+            <KeyboardAvoidingView style={{ padding: 10 }} behavior="padding">
                 <TextInput style={styles.textInput}
                     mode="flat"
                     placeholder="Ingresa tu nombre"
@@ -114,9 +127,11 @@ const Register = ({ navigation }) => {
                     onChangeText={text => setPassword(text)}
                     secureTextEntry />
             </KeyboardAvoidingView>
-            <Button mode="contained" onPress={register} style={styles.button}>
-                Registrarse
-            </Button>
+            {loading ? <ActivityIndicator animating={true} color={'#fd7753'}></ActivityIndicator> :
+                <Button mode="contained" onPress={register} style={styles.button}>
+                    Registrarse
+                </Button>
+            }
         </View>
     )
 }

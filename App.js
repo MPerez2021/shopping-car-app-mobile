@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { registerRootComponent } from 'expo';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { DrawerContent } from './components/SideMenu';
@@ -7,24 +8,22 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ShopDetail from './screens/ShopDetail';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { Provider } from 'react-native-paper';
+import { Provider as PaperProvider } from 'react-native-paper';
 import Register from './screens/Register';
 import Login from './screens/Login';
 import Products from './screens/Products';
 import Store from './screens/Store';
-import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
-
+import { initializeApp } from 'firebase/app'
+import firebaseConfig from './firebase'
+import {getAuth, onAuthStateChanged, signOut} from 'firebase/auth'
+initializeApp(firebaseConfig)
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
-//initializeApp(firebaseConfig)
 
 function logOut() {
   const auth = getAuth()
-  signOut(auth)/* .then(() => {
-    //navigation.navigate('Home')
-    //console.log('se ha cerrado sesión');
-  }) */
+  signOut(auth)
 }
 function homePage() {
   return (
@@ -36,7 +35,7 @@ function homePage() {
         backgroundColor: '#A24730'
       },
       headerTintColor: 'white'
-    }} drawerContent={props => <DrawerContent {...props}></DrawerContent>}>
+    }} initialRouteName="Inicio" drawerContent={props => <DrawerContent {...props}></DrawerContent>}>
       <Drawer.Screen name="Inicio" component={Products} options={{
         headerRight: () => (
           <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 10 }}
@@ -53,17 +52,25 @@ function homePage() {
 }
 
 export default function App() {
+
   const [verifyIfUserExists, setVerifyIfUserExists] = React.useState(false)
-  const auth = getAuth()
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setVerifyIfUserExists(true)
-    } else {
-      setVerifyIfUserExists(false)
-    }
-  })
+
+  useEffect(() => {
+    const auth = getAuth()
+    const user = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setVerifyIfUserExists(true)
+      } else {
+        setVerifyIfUserExists(false)
+      }
+    })
+    return (() => {
+      user()
+    })
+  }, [])
+
   return (
-    <Provider>
+    <PaperProvider>
       <NavigationContainer>
         <StatusBar style="light" />
         <Stack.Navigator initialRouteName="Login" screenOptions={{
@@ -79,7 +86,7 @@ export default function App() {
           {!verifyIfUserExists ?
             <>
               <Stack.Screen name="Login" component={Login}></Stack.Screen>
-              <Stack.Screen name="Register" component={Register}></Stack.Screen>
+              <Stack.Screen name="Registro" component={Register}></Stack.Screen>
             </> :
             <Stack.Screen name="Inicio" component={homePage} options={{
               headerShown: false
@@ -89,10 +96,9 @@ export default function App() {
           <Stack.Screen name="Local" component={Store}></Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
-    </Provider>
+    </PaperProvider>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -101,3 +107,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+registerRootComponent(App);

@@ -4,23 +4,18 @@ import { Title, Button } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import { doc, setDoc, getDoc, getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
-const auth = getAuth()
-const db = getFirestore()
 const ShopDetail = () => {
     const [userDataProducts, setUserDataProducts] = React.useState([])
     const [counter, setCounter] = React.useState({ data: [] })
-
+    const auth = getAuth()
+    const db = getFirestore()
     useEffect(() => {
         lg()
         return () => {
         }
     }, [])
-
-
     async function lg() {
         const docRef = doc(db, "users", auth.currentUser.uid);
         const docSnap = await getDoc(docRef).then((info) => {
@@ -32,7 +27,6 @@ const ShopDetail = () => {
             setCounter({ data: x })
         });
     }
-
     function plus(index) {
         counter.data[index]++
         let data = counter.data
@@ -47,7 +41,6 @@ const ShopDetail = () => {
             setCounter({ data })
         }
     }
-
     function calculateTotal() {
         let total = 0
         userDataProducts.forEach((product, index) => {
@@ -89,11 +82,9 @@ const ShopDetail = () => {
                     Borrar Productos
                 </Button>
             </View>
-
         </View >
     )
 }
-
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#231e1c',
@@ -137,7 +128,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#fd7753'
 
     }
-
 })
-
 export default ShopDetail

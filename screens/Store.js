@@ -3,55 +3,39 @@ import { View, Image, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView }
 import { Title, Text, TextInput } from 'react-native-paper';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth } from "firebase/auth"
-import { getFirestore, addDoc, collection } from "firebase/firestore";
-import firebase from 'firebase/compat'
+import { getFirestore, addDoc, collection, onSnapshot, query, orderBy, doc, deleteDoc } from "firebase/firestore";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
-const auth = getAuth()
-const db = getFirestore()
 const Store = () => {
+    const auth = getAuth()
+    const db = getFirestore()
     const [commentText, setCommentText] = React.useState('')
     const [allCommentsData, setAllCommentsData] = React.useState([])
-    const windowHeight = Dimensions.get('window').height
-    const windowWidth = Dimensions.get('window').width
     useEffect(() => {
-        getUsersComments()
+        const getComments = query(collection(db, 'comments'), orderBy('createdAt.date', 'desc'), orderBy('createdAt.time', 'desc'))
+        const unsubcribe = onSnapshot(getComments, (data) => {
+            let comment = []
+            data.forEach(commentData => {
+                let docs = {
+                    createdAt: commentData.data().createdAt,
+                    user: commentData.data().user,
+                    comment: commentData.data().comment,
+                    commentId: commentData.id
+                }
+                comment.push(docs)
+            })
+            setAllCommentsData(comment)
+        })
         return () => {
-            getUsersComments()
+            unsubcribe()
         }
     }, [])
-
-    async function getUsersComments() {
-        const commentDocs = firebase.firestore().
-            collection('comments').orderBy('createdAt.date', 'desc').orderBy('createdAt.time', 'desc').
-            onSnapshot(data => setAllCommentsData(
-                data.docs.map(commentData => ({
-                    createdAt: commentData.data().createdAt,
-                    name: commentData.data().user.name,
-                    comment: commentData.data().comment
-                }))
-            ))
-        // let commentsList = []
-        /* const commentDocs = await getDocs(collection(db, 'comments'), orderBy('createdAt','asc')) */
-        /*  commentDocs.forEach(commentData => {
-             let docs = {
-                 date: commentData.data().createdAt.toDate(),
-                 name: commentData.data().user.name,
-                 comment: commentData.data().comment
-             }
-             console.log(docs);
-             commentsList.push(docs)
-         })
-         setAllCommentsData(commentsList) */
-    }
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Image style={styles.logo}
                     source={
-                        (require('../assets/logo.jpeg'))
+                        (require('../assets/logos.png'))
                     } />
                 <Title style={{ color: 'white', fontSize: 30, marginTop: 10 }}>Proyect Papelería</Title>
             </View>
@@ -99,10 +83,18 @@ const Store = () => {
                                     </View>
                                     <View style={styles.userCommentText}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <Text style={{ color: 'white', marginRight: 20 }}>{comment.name}</Text>
+                                            <Text style={{ color: 'white', marginRight: 20 }}>{comment.user.name}</Text>
                                             <Text style={styles.text}>{comment.createdAt.date}</Text>
                                         </View>
-                                        <Text style={styles.text}>{comment.comment}</Text>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems:'center' }}>
+                                            <Text style={styles.text}>{comment.comment}</Text>
+                                            {auth.currentUser.uid === comment.user.uid ?
+                                                <FontAwesome5 name="trash" size={10} style={{marginLeft: 5}} color="#fd7753" onPress={() => {
+                                                    deleteDoc(doc(db, 'comments', comment.commentId))
+                                                }} />
+                                                : null
+                                            }
+                                        </View>
                                     </View>
                                 </View>
                             </View>
@@ -112,7 +104,7 @@ const Store = () => {
                         Sé el primero en dejar un comentario
                     </Text>
             }
-        </View >
+        </View>
     )
 }
 
@@ -124,8 +116,8 @@ const styles = StyleSheet.create({
         width: windowWidth
     },
     logo: {
-        width: 125,
-        height: 125
+        width: 200,
+        height: 200
     },
     header: {
         alignItems: 'center',
@@ -161,6 +153,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#717589',
+       
     }
 
 });

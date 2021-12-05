@@ -5,11 +5,12 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { getAuth, signOut } from "firebase/auth";
-import { AntDesign } from '@expo/vector-icons';
+
 const windowHeight = Dimensions.get('window').height;
-const auth = getAuth()
+
 export function DrawerContent(props) {
     function logOut() {
+        const auth = getAuth()
         signOut(auth).then(() => {
             props.navigation.popTop();
         })
@@ -22,7 +23,7 @@ export function DrawerContent(props) {
                         <View style={{ flexDirection: 'column', marginTop: 20, alignItems: 'center' }}>
                             <Image style={styles.logo}
                                 source={
-                                    (require('../assets/logo.jpeg'))
+                                    (require('../assets/logos.png'))
                                 } />
                         </View>
                     </View>
@@ -31,17 +32,17 @@ export function DrawerContent(props) {
                             icon={() => (
                                 <FontAwesome5 name="home" size={25} color="white" />
                             )}
-                            label="Home"
+                            label="Inicio"
                             labelStyle={styles.textDrawer}
                             onPress={() => { props.navigation.navigate('Inicio') }}
                         />
                         <DrawerItem
                             icon={() => (
-                                <AntDesign name="shoppingcart" size={24} color="white" />
+                                <FontAwesome5 name="comment-alt" size={24} color="white" />
                             )}
-                            label="Tus compras"
+                            label="Comentarios"
                             labelStyle={styles.textDrawer}
-                            onPress={() => { props.navigation.navigate('Mis Compras'), props.navigation.closeDrawer() }}
+                            onPress={() => { props.navigation.navigate('Local'), props.navigation.closeDrawer() }}
                         />
                         <DrawerItem
                             icon={() => (
@@ -65,9 +66,8 @@ const styles = StyleSheet.create({
         height: windowHeight
     },
     logo: {
-        width: 125,
-        height: 125,
-        backgroundColor: 'red'
+        width: 200,
+        height: 200      
     },
     userInfoSection: {
         paddingLeft: 20

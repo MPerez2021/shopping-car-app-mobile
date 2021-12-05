@@ -1,36 +1,34 @@
 import React from 'react'
 import { View, StyleSheet, Text, Dimensions, KeyboardAvoidingView } from 'react-native'
-import { Button, HelperText, TextInput, Subheading, Title } from 'react-native-paper';
-import { getFirestore } from "firebase/firestore";
+import { Button, HelperText, TextInput, Subheading, Title, ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/core';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
 const Login = ({ navigation }) => {
     const [email, setEmail] = React.useState('')
     const [password, setPassword] = React.useState('')
     const [verifyUser, setVerifyUser] = React.useState(false)
     const [verifyEmailAndPassword, setVerifyEmailAndPassword] = React.useState(false)
-
-    const auth = getAuth()
-    const db = getFirestore()
+    const [loading, setLoading] = React.useState(false)
     function signIn() {
+        setLoading(true)
+        const auth = getAuth()
         signInWithEmailAndPassword(auth, email, password).then(() => {
             navigation.navigate('Inicio')
-        }).catch(error => {
-            //alert(error.message)
+            setLoading(false)
+        }).catch(error => {           
             if (error.code === 'auth/user-not-found') {
                 setVerifyUser(true)
+                setLoading(false)
             }
             if (error.code === 'auth/wrong-password' || error.code === 'auth/internal-error' || error.code === 'auth/invalid-email') {
                 setVerifyEmailAndPassword(true)
+                setLoading(false)
             }
         })
-    }  
+    }
     useFocusEffect(
         React.useCallback(() => {
             setEmail('')
@@ -72,17 +70,18 @@ const Login = ({ navigation }) => {
                     onChangeText={text => setPassword(text)}
                 />
             </KeyboardAvoidingView>
-            <Button mode="contained" uppercase={true} style={styles.button} onPress={signIn}>
-                Iniciar Sesión
-            </Button>
+            {loading ? <ActivityIndicator animating={true} color={'#fd7753'}></ActivityIndicator> :
+                <Button mode="contained" uppercase={true} style={styles.button} onPress={signIn}>
+                    Iniciar Sesión
+                </Button>
+            }
             <HelperText type="info" visible={true} style={{ color: 'white' }}>
                 No tienes una cuenta? <Text style={{ color: '#fd7753' }}
-                    onPress={() => navigation.navigate('Register', { screen: 'Register' })}>Registrate aquí</Text>
+                    onPress={() => navigation.navigate('Registro', { screen: 'Register' })}>Registrate aquí</Text>
             </HelperText>
         </View>
     )
 }
-
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#231e1c',
