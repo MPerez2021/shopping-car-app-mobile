@@ -5,16 +5,35 @@ import { useFocusEffect } from '@react-navigation/core';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { setDoc, getFirestore, doc } from "firebase/firestore";
+import { Avatar } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const Register = ({ navigation }) => {
-    const [name, setName] = React.useState('')
-    const [email, setEmail] = React.useState('')
-    const [password, setPassword] = React.useState('')
-    const [incompleteData, setIncompleteData] = React.useState(false)
-    const [emailAlreadyExists, setEmailAlreadyExists] = React.useState(false)
-    const [weakPassword, setWeakPassword] = React.useState(false)
-    const [loading, setLoading] = React.useState(false)
+    const [name, setName] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [incompleteData, setIncompleteData] = React.useState(false);
+    const [emailAlreadyExists, setEmailAlreadyExists] = React.useState(false);
+    const [weakPassword, setWeakPassword] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
+    const [userAvatar, setUserAvatar] = React.useState("");
+    const [noPhoto, setNoPhoto] = React.useState(false)
+    let openImagePickerAsync = async () => {
+        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera roll is required!");
+            return;
+        }
+        let pickerResult = await ImagePicker.launchImageLibraryAsync();
+
+        if (pickerResult.cancelled) {
+            setUserAvatar("")
+        } else {
+            setUserAvatar(pickerResult.uri);
+        }
+        console.log(pickerResult);
+    }
     useFocusEffect(
         React.useCallback(() => {
             setName('')
@@ -31,59 +50,70 @@ const Register = ({ navigation }) => {
         setLoading(true)
         const auth = getAuth()
         const db = getFirestore()
-        createUserWithEmailAndPassword(auth, email, password).then((userCredentials) => {
-            var user = userCredentials.user
-            setDoc(doc(db, 'users', user.uid), {
-                name: name,
-                role: 'client',
-                products: []
-            });
-            updateProfile(auth.currentUser, {
-                displayName: name
-            }).catch((error) => {
-
-            })
-            navigation.navigate('Inicio');
-            ToastAndroid.show('Usuario registrado, bienvenido a Proyect Papelery', ToastAndroid.LONG)
+        console.log(userAvatar);
+        if (userAvatar === "") {
+            setIncompleteData(true)
+            setEmailAlreadyExists(false)
+            setWeakPassword(false)    
             setLoading(false)
-        }).catch(error => {
-            /* alert(error.message) */
-            switch (error.code) {
-                case 'auth/invalid-email':
-                    setIncompleteData(true)
-                    setEmailAlreadyExists(false)
-                    setWeakPassword(false)
-                    setLoading(false)
-                    break;
-                case 'auth/internal-error':
-                    setIncompleteData(true)
-                    setEmailAlreadyExists(false)
-                    setWeakPassword(false)
-                    setLoading(false)
-                    break;
-                case 'auth/missing-email':
-                    setIncompleteData(true)
-                    setEmailAlreadyExists(false)
-                    setWeakPassword(false)
-                    setLoading(false)
-                    break;
-                case 'auth/email-already-in-use':
-                    setEmailAlreadyExists(true)
-                    setIncompleteData(false)
-                    setWeakPassword(false)
-                    setLoading(false)
-                    break;
-                case 'auth/weak-password':
-                    setWeakPassword(true)
-                    setIncompleteData(false)
-                    setEmailAlreadyExists(false)
-                    setLoading(false)
-                default:
-                    break;
-            }
+        } else {
+            createUserWithEmailAndPassword(auth, email, password).then((userCredentials) => {
+                var user = userCredentials.user
+                setDoc(doc(db, 'users', user.uid), {
+                    name: name,
+                    role: 'client',
+                    products: [],
+                    productsBought: [],
+                    avatar: userAvatar
+                });
+                updateProfile(auth.currentUser, {
+                    displayName: name,
+                    photoURL: userAvatar
+                }).catch((error) => {
 
-        })
+                })
+                navigation.navigate('Inicio');
+                ToastAndroid.show('Usuario registrado, bienvenido a Proyect Papelery', ToastAndroid.LONG)
+                setLoading(false)
+            }).catch(error => {
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        setIncompleteData(true)
+                        setEmailAlreadyExists(false)
+                        setWeakPassword(false)
+                        setLoading(false)
+                        break;
+                    case 'auth/internal-error':
+                        setIncompleteData(true)
+                        setEmailAlreadyExists(false)
+                        setWeakPassword(false)
+                        setLoading(false)
+                        break;
+                    case 'auth/missing-email':
+                        setIncompleteData(true)
+                        setEmailAlreadyExists(false)
+                        setWeakPassword(false)
+                        setLoading(false)
+                        break;
+                    case 'auth/email-already-in-use':
+                        setEmailAlreadyExists(true)
+                        setIncompleteData(false)
+                        setWeakPassword(false)
+                        setLoading(false)
+                        break;
+                    case 'auth/weak-password':
+                        setWeakPassword(true)
+                        setIncompleteData(false)
+                        setEmailAlreadyExists(false)
+                        setLoading(false)
+                    default:
+                        break;
+                }
+            })
+        }
+
     }
+
     return (
         <View style={styles.container}>
             <View style={{ marginBottom: 40 }}>
@@ -117,7 +147,6 @@ const Register = ({ navigation }) => {
                     left={<TextInput.Icon name="email" color={'white'} />}
                     value={email}
                     onChangeText={text => setEmail(text)} />
-
                 <TextInput style={styles.textInput}
                     placeholder="Ingresa tu contraseña"
                     label="Contraseña"
@@ -127,6 +156,21 @@ const Register = ({ navigation }) => {
                     onChangeText={text => setPassword(text)}
                     secureTextEntry />
             </KeyboardAvoidingView>
+
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: 300 }}>
+                <Button mode="contained" uppercase={false} onPress={openImagePickerAsync} style={{
+                    width: 'auto',
+                    backgroundColor: '#3159b5'
+                }}>
+                    Elegir foto de perfil
+                </Button>
+                {userAvatar ? <View style={{
+                    width: 50
+                }}>
+                    <Avatar.Image size={40} source={{ uri: userAvatar }} />
+                </View> : null}
+            </View>
             {loading ? <ActivityIndicator animating={true} color={'#fd7753'}></ActivityIndicator> :
                 <Button mode="contained" onPress={register} style={styles.button}>
                     Registrarse

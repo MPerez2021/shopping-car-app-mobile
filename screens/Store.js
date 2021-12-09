@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { View, Image, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native'
-import { Title, Text, TextInput } from 'react-native-paper';
+import { Title, Text, TextInput, Avatar } from 'react-native-paper';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth } from "firebase/auth"
 import { getFirestore, addDoc, collection, onSnapshot, query, orderBy, doc, deleteDoc } from "firebase/firestore";
@@ -20,7 +20,7 @@ const Store = () => {
                     createdAt: commentData.data().createdAt,
                     user: commentData.data().user,
                     comment: commentData.data().comment,
-                    commentId: commentData.id
+                    commentId: commentData.id               
                 }
                 comment.push(docs)
             })
@@ -64,7 +64,8 @@ const Store = () => {
                                         },
                                         user: {
                                             uid: auth.currentUser.uid,
-                                            name: auth.currentUser.displayName
+                                            name: auth.currentUser.displayName,
+                                            avatar: auth.currentUser.photoURL
                                         }
                                     })
                                     setCommentText('')
@@ -79,17 +80,17 @@ const Store = () => {
                             <View style={{ backgroundColor: '#231e1c' }}>
                                 <View style={styles.commentCard}>
                                     <View style={styles.userPhoto}>
-                                        <FontAwesome5 name="user-circle" size={26} color="white" />
+                                        <Avatar.Image size={35} source={{uri: comment.user.avatar}} />
                                     </View>
                                     <View style={styles.userCommentText}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <Text style={{ color: 'white', marginRight: 20 }}>{comment.user.name}</Text>
                                             <Text style={styles.text}>{comment.createdAt.date}</Text>
                                         </View>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems:'center' }}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Text style={styles.text}>{comment.comment}</Text>
                                             {auth.currentUser.uid === comment.user.uid ?
-                                                <FontAwesome5 name="trash" size={10} style={{marginLeft: 5}} color="#fd7753" onPress={() => {
+                                                <FontAwesome5 name="trash" size={10} style={{ marginLeft: 5 }} color="#fd7753" onPress={() => {
                                                     deleteDoc(doc(db, 'comments', comment.commentId))
                                                 }} />
                                                 : null
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#717589',
-       
+
     }
 
 });

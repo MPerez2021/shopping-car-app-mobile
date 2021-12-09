@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { View, Text, StyleSheet, Dimensions, FlatList, Image, ScrollView, ToastAndroid } from 'react-native'
-import { getDocs, doc, collection, onSnapshot, getFirestore, setDoc } from "firebase/firestore";
+import { getDocs, doc, collection, onSnapshot, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import { Button, Card, Subheading, Title, Modal, Portal } from 'react-native-paper';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { AntDesign } from '@expo/vector-icons';
@@ -15,7 +15,7 @@ const Products = ({ navigation }) => {
     const [counter, setCounter] = React.useState({ data: [] })
     const [visible, setVisible] = React.useState(false);
     const db = getFirestore()
-    const auth = getAuth()   
+    const auth = getAuth() 
     useEffect(() => {
         getProductData()
         const getUser = onSnapshot(doc(db, 'users', auth.currentUser.uid), (info) => {
@@ -39,7 +39,9 @@ const Products = ({ navigation }) => {
             let g = {
                 image: data.data().image,
                 price: data.data().price,
-                name: data.data().name
+                name: data.data().name,
+                id: data.id,
+                quantity: 1
             }
             productList.push(g)
         })
@@ -58,12 +60,18 @@ const Products = ({ navigation }) => {
         counter.data[index]++
         let data = counter.data
         setCounter({ data })
+        userDataProducts.forEach((product, index) => {
+            product.quantity = counter.data[index]
+        })
     }
     function minus(index) {
         if (counter.data[index] > 1) {
             counter.data[index] = counter.data[index] - 1
             let data = counter.data
             setCounter({ data })
+            userDataProducts.forEach((product, index) => {
+                product.quantity = counter.data[index]
+            })
         }
     }
 
@@ -132,7 +140,15 @@ const Products = ({ navigation }) => {
                                             <Text style={{ color: 'white' }}> $ {calculateTotal()} </Text>
                                         </View>
                                     </View>
-                                    {userDataProducts.length > 0 ? <Button style={styles.payButton} icon="cart-off" mode="contained"
+                                    <Button style={styles.payButton} icon="cart-off" mode="contained"
+                                        onPress={async () => {
+                                            setDoc(doc(db, 'users', auth.currentUser.uid), {
+                                                products: userDataProducts
+                                            }, { merge: true })
+                                            setVisible(false)
+                                            navigation.navigate('Proceso de Pago', { screen: 'BuyProducts' })
+                                        }}>Comprar</Button>
+                                    {userDataProducts.length > 0 ? <Button style={styles.deleteButton} icon="cart-off" mode="contained"
                                         onPress={async () => {
                                             setUserDataProducts([])
                                             setDoc(doc(db, 'users', auth.currentUser.uid), {
@@ -141,6 +157,7 @@ const Products = ({ navigation }) => {
                                         }}>
                                         Borrar Productos
                                     </Button> : null}
+
                                 </View>
                             }
 
@@ -161,7 +178,7 @@ const Products = ({ navigation }) => {
             </Button>
             <FlatList
                 data={productData}
-                renderItem={({ item }) =>
+                renderItem={({ item, index }) =>
                     <View>
                         <Card style={styles.card}>
                             <View style={styles.productCard}>
@@ -171,19 +188,19 @@ const Products = ({ navigation }) => {
                             </View>
                             <View style={{ display: 'flex', justifyContent: "space-between" }}>
                                 <View style={styles.infoProductCard}>
-                                    <Title style={{ color: 'white' }}>{item.name}</Title>
+                                    <Title style={{ color: 'white', width: 120, flexWrap: 'wrap' }}>{item.name}</Title>
                                     <Title style={{ color: 'white' }}>$ {item.price}</Title>
                                 </View>
                                 <Card.Actions style={{ position: 'absolute', bottom: 0, right: 10 }}>
                                     <Button icon="cart-plus" mode="contained"
                                         uppercase={false}
                                         style={{ backgroundColor: '#fd7753' }}
-                                        onPress={async () => {
-                                            userDataProducts.push({ cost: item.price, name: item.name, image: item.image, key: item.name })
+                                        onPress={() => {
+                                            userDataProducts.push({ cost: item.price, name: item.name, image: item.image, key: item.id, quantity: item.quantity })
                                             setDoc(doc(db, 'users', auth.currentUser.uid), {
                                                 products: userDataProducts
                                             }, { merge: true })
-                                            ToastAndroid.show( item.name + ' añadido al carrito', ToastAndroid.SHORT)
+                                            ToastAndroid.show(item.name + ' añadido al carrito', ToastAndroid.SHORT)
                                         }}>
                                         Añadir
                                     </Button>
@@ -196,7 +213,7 @@ const Products = ({ navigation }) => {
             /*  keyExtractor={item => item.key} */
             />
 
-        </View>
+        </View >
     )
 }
 
@@ -279,8 +296,10 @@ const styles = StyleSheet.create({
     },
     payButton: {
         marginBottom: 20,
+        backgroundColor: '#3159b5'
+    },
+    deleteButton:{        
         backgroundColor: '#fd7753'
-
     }
 })
 export default Products

@@ -4,7 +4,15 @@
     "slug": "go_market",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon22.png",
+    "icon": "./assets/Icon22.png",
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
     "splash": {
       "image": "./assets/splashScreen1.png",
       "resizeMode": "contain",

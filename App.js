@@ -13,9 +13,20 @@ import Register from './screens/Register';
 import Login from './screens/Login';
 import Products from './screens/Products';
 import Store from './screens/Store';
-import { initializeApp } from 'firebase/app'
-import firebaseConfig from './firebase'
-import {getAuth, onAuthStateChanged, signOut} from 'firebase/auth'
+import { initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import BuyProducts from './screens/BuyProducts';
+import MyProducts from './screens/MyProducts';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDaQbiZPLV1Iritn3dRSgCWWGOzcaW-zSo",
+  authDomain: "shopping-car-mobile-app.firebaseapp.com",
+  projectId: "shopping-car-mobile-app",
+  storageBucket: "shopping-car-mobile-app.appspot.com",
+  messagingSenderId: "130218438588",
+  appId: "1:130218438588:web:500ca18b400585302e85b9"
+};
+
 initializeApp(firebaseConfig)
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -35,7 +46,7 @@ function homePage() {
         backgroundColor: '#A24730'
       },
       headerTintColor: 'white'
-    }} initialRouteName="Inicio" drawerContent={props => <DrawerContent {...props}></DrawerContent>}>
+    }} drawerContent={props => <DrawerContent {...props}></DrawerContent>}>
       <Drawer.Screen name="Inicio" component={Products} options={{
         headerRight: () => (
           <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 10 }}
@@ -46,7 +57,16 @@ function homePage() {
           <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 10 }}
             onPress={logOut} />)
       }} />
-
+      <Drawer.Screen name="Proceso de Pago" component={BuyProducts} options={{
+        headerRight: () => (
+          <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 10 }}
+            onPress={logOut} />)
+      }} />
+      <Drawer.Screen name="Mis compras" component={MyProducts} options={{
+        headerRight: () => (
+          <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 10 }}
+            onPress={logOut} />)
+      }} />
     </Drawer.Navigator>
   );
 }
@@ -92,8 +112,10 @@ export default function App() {
               headerShown: false
             }}></Stack.Screen>
           }
-          <Stack.Screen name="Mis Compras" component={ShopDetail}></Stack.Screen>
+          {/*  <Stack.Screen name="Mis Compras" component={ShopDetail}></Stack.Screen> */}
           <Stack.Screen name="Local" component={Store}></Stack.Screen>
+          <Stack.Screen name="Proceso de Pago" component={BuyProducts}></Stack.Screen>
+          <Stack.Screen name="Mis compras" component={MyProducts}></Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

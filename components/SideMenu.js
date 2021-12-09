@@ -5,14 +5,14 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { getAuth, signOut } from "firebase/auth";
-
+import { AntDesign } from '@expo/vector-icons';
 const windowHeight = Dimensions.get('window').height;
 
 export function DrawerContent(props) {
     function logOut() {
         const auth = getAuth()
         signOut(auth).then(() => {
-            props.navigation.popTop();
+            props.navigation.navigate('Login');
         })
     }
     return (
@@ -46,6 +46,14 @@ export function DrawerContent(props) {
                         />
                         <DrawerItem
                             icon={() => (
+                                <AntDesign name="shoppingcart" size={24} color="white" />
+                            )}
+                            label="Mis compras"
+                            labelStyle={styles.textDrawer}
+                            onPress={() => { props.navigation.navigate('Mis compras'), props.navigation.closeDrawer() }}
+                        />
+                        <DrawerItem
+                            icon={() => (
                                 <MaterialIcons name="logout" size={25} color="white" style={{ marginRight: 1 }} />
                             )}
                             label="Cerrar Sesión"
@@ -67,7 +75,7 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 200,
-        height: 200      
+        height: 200
     },
     userInfoSection: {
         paddingLeft: 20
