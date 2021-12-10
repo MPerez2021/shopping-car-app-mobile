@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ShopDetail from './screens/ShopDetail';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider, ActivityIndicator } from 'react-native-paper';
 import Register from './screens/Register';
 import Login from './screens/Login';
 import Products from './screens/Products';
@@ -17,6 +17,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import BuyProducts from './screens/BuyProducts';
 import MyProducts from './screens/MyProducts';
+import Scanner from './screens/Scanner';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDaQbiZPLV1Iritn3dRSgCWWGOzcaW-zSo",
@@ -67,6 +68,11 @@ function homePage() {
           <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 10 }}
             onPress={logOut} />)
       }} />
+      <Drawer.Screen name="Scanner" component={Scanner} options={{
+        headerRight: () => (
+          <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 10 }}
+            onPress={logOut} />)
+      }} />
     </Drawer.Navigator>
   );
 }
@@ -74,12 +80,14 @@ function homePage() {
 export default function App() {
 
   const [verifyIfUserExists, setVerifyIfUserExists] = React.useState(false)
-
+  const [loading, setLoading] = React.useState(false)
   useEffect(() => {
     const auth = getAuth()
+    setLoading(false)
     const user = onAuthStateChanged(auth, (user) => {
       if (user) {
         setVerifyIfUserExists(true)
+        setLoading(true)
       } else {
         setVerifyIfUserExists(false)
       }
@@ -108,14 +116,10 @@ export default function App() {
               <Stack.Screen name="Login" component={Login}></Stack.Screen>
               <Stack.Screen name="Registro" component={Register}></Stack.Screen>
             </> :
-            <Stack.Screen name="Inicio" component={homePage} options={{
+            <Stack.Screen name="Home" component={homePage} options={{
               headerShown: false
             }}></Stack.Screen>
-          }
-          {/*  <Stack.Screen name="Mis Compras" component={ShopDetail}></Stack.Screen> */}
-          <Stack.Screen name="Local" component={Store}></Stack.Screen>
-          <Stack.Screen name="Proceso de Pago" component={BuyProducts}></Stack.Screen>
-          <Stack.Screen name="Mis compras" component={MyProducts}></Stack.Screen>
+          }  
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

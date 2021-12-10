@@ -1,66 +1,83 @@
 import React, { useEffect } from 'react'
-import { View, StyleSheet, Dimensions, FlatList, Image, ScrollView, ToastAndroid } from 'react-native'
-import { getDocs, doc, collection, onSnapshot, getFirestore, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { Button, Card, Subheading, Title, Modal, Portal, TextInput, Text } from 'react-native-paper';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { AntDesign } from '@expo/vector-icons';
+import { View, StyleSheet, Dimensions, FlatList } from 'react-native'
+import { collection, onSnapshot, getFirestore, query, where } from "firebase/firestore";
+import { Button, Modal, Portal, Text } from 'react-native-paper';
+import { getAuth } from "firebase/auth";
+import QRCode from 'react-native-qrcode-svg';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 const MyProducts = () => {
     const [userDataProductsBought, setUserDataProductsBought] = React.useState([])
-    const [newArray, setNewArray] = React.useState([])
+    const [qrCode, setQrCode] = React.useState('GO')
+    const [visible2, setVisible2] = React.useState(false);
     const db = getFirestore()
     const auth = getAuth()
-    useEffect(() => {
-        const getUser = onSnapshot(doc(db, 'users', auth.currentUser.uid), (info) => {
-            setUserDataProductsBought(info.data().productsBought)
-        })
 
+    useEffect(() => {
+        const getProducts = query(collection(db, 'productsBought'), where('user', '==', auth.currentUser.uid))
+        const unsubcribe = onSnapshot(getProducts, (data) => {
+            let products = []
+            data.forEach((productData) => {
+                let docs = {
+                    totalCost: productData.data().totalCost,
+                    user: productData.data().user,
+                    product: productData.data().products,
+                    productId: productData.id
+                }
+                products.push(docs)
+            })
+            setUserDataProductsBought(products)
+        })
         return () => {
-            getUser()
+            unsubcribe()
         }
     }, [])
-
-    function s() {
-        const x = userDataProductsBought.map(elements => elements.products.map(products => products))
-        let h = []
-        x.forEach((elem, index) => {
-            h[index] = elem
-        })
-        //  console.log(h[1][0].cost);
-        for (let i = 0; i < h.length; i++) {           
-            for (let j = 0; j < h[i].length; j++) {
-                let x = []
-                x = (h[i][j].name)
-            }
-        }
-        console.log(x[1][2].cost);
-        /*   console.log(h);
-          setNewArray(h)
-          console.log(newArray); */
-    }
     return (
-        <View style={{ backgroundColor: 'red' }}>
-            {newArray.map((data, index) =>
-                <View style={{ backgroundColor: 'yellow', margin: 10 }}>
-                    <Text>
-                        {data[index][index].name}
-                    </Text>
-                </View>
-            )}
-            {/*  <FlatList
-                data={newArray}
+        <View style={{ backgroundColor: 'white' }}>
+            <FlatList data={userDataProductsBought}
                 renderItem={({ item, index }) =>
-                    <View style={{ backgroundColor: 'yellow' }}>
-                        <Text>
-                            {item[index].name}
-                        </Text>                  
+                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                        <View style={{ flexDirection: 'column' }}>
+                            <Text>Compra# {index + 1}</Text>
+                            <Text>{item.totalCost}</Text>
+                            {item.product.map(data =>
+                                <Text>{data.cost}</Text>
+                            )}
+                        </View>
+                        <Button mode='outlined' onPress={() => {
+                            setQrCode(item.productId)
+                            setVisible2(!visible2)
+                        }}>Ver código Qr</Button>
                     </View>
-                }
-            /> */}
-
-
-            <Button onPress={s}>hola</Button>
+                } />
+            <Portal>
+                <Modal visible={!visible2} contentContainerStyle={styles.containerStyle}>
+                    <Text style={{ color: 'red' }} onPress={() => {
+                        setVisible2(true)
+                    }}>Cerrar</Text>
+                    <QRCode color='black' size={300} value={qrCode} />
+                </Modal>
+            </Portal>
         </View>
     )
 }
-
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#231e1c',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        height: windowHeight,
+        width: windowWidth,
+        paddingLeft: 20,
+        paddingRight: 20
+    },
+    containerStyle: {
+        backgroundColor: 'white',
+        marginLeft: 15,
+        marginRight: 15
+    }
+})
 export default MyProducts

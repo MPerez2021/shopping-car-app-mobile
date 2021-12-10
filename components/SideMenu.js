@@ -54,6 +54,14 @@ export function DrawerContent(props) {
                         />
                         <DrawerItem
                             icon={() => (
+                                <AntDesign name="shoppingcart" size={24} color="white" />
+                            )}
+                            label="Scanner"
+                            labelStyle={styles.textDrawer}
+                            onPress={() => { props.navigation.navigate('Scanner'), props.navigation.closeDrawer() }}
+                        />
+                        <DrawerItem
+                            icon={() => (
                                 <MaterialIcons name="logout" size={25} color="white" style={{ marginRight: 1 }} />
                             )}
                             label="Cerrar Sesión"

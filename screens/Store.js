@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { View, Image, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native'
-import { Title, Text, TextInput, Avatar } from 'react-native-paper';
+import { Title, Text, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth } from "firebase/auth"
 import { getFirestore, addDoc, collection, onSnapshot, query, orderBy, doc, deleteDoc } from "firebase/firestore";
@@ -11,7 +11,9 @@ const Store = () => {
     const db = getFirestore()
     const [commentText, setCommentText] = React.useState('')
     const [allCommentsData, setAllCommentsData] = React.useState([])
+    const [loading, setLoading] = React.useState(false)
     useEffect(() => {
+        setLoading(false)
         const getComments = query(collection(db, 'comments'), orderBy('createdAt.date', 'desc'), orderBy('createdAt.time', 'desc'))
         const unsubcribe = onSnapshot(getComments, (data) => {
             let comment = []
@@ -20,11 +22,12 @@ const Store = () => {
                     createdAt: commentData.data().createdAt,
                     user: commentData.data().user,
                     comment: commentData.data().comment,
-                    commentId: commentData.id               
+                    commentId: commentData.id
                 }
                 comment.push(docs)
             })
             setAllCommentsData(comment)
+            setLoading(true)
         })
         return () => {
             unsubcribe()
@@ -73,6 +76,7 @@ const Store = () => {
                     />
                 </KeyboardAvoidingView>
             </View>
+
             {
                 allCommentsData.length > 0 ?
                     <ScrollView>
@@ -80,7 +84,7 @@ const Store = () => {
                             <View style={{ backgroundColor: '#231e1c' }}>
                                 <View style={styles.commentCard}>
                                     <View style={styles.userPhoto}>
-                                        <Avatar.Image size={35} source={{uri: comment.user.avatar}} />
+                                        <Avatar.Image size={35} source={{ uri: comment.user.avatar }} />
                                     </View>
                                     <View style={styles.userCommentText}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -101,9 +105,13 @@ const Store = () => {
                             </View>
                         )}
                     </ScrollView> :
-                    <Text style={{ color: '#717589', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
-                        Sé el primero en dejar un comentario
-                    </Text>
+                    <View style={{marginTop:10}}>
+                        {!loading ? <ActivityIndicator animating={true} color={'#fd7753'} /> : <Text style={{ color: '#717589', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
+                            Sé el primero en dejar un comentario
+                        </Text>}
+
+                    </View>
+
             }
         </View>
     )

@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
-import { View, Text, StyleSheet, Dimensions, FlatList, Image, ScrollView, ToastAndroid } from 'react-native'
-import { getDocs, doc, collection, onSnapshot, getFirestore, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { Button, Card, Subheading, Title, Modal, Portal, TextInput } from 'react-native-paper';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { AntDesign } from '@expo/vector-icons';
+import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { doc, collection, onSnapshot, getFirestore, setDoc, updateDoc, arrayUnion, addDoc } from "firebase/firestore";
+import { Button, TextInput } from 'react-native-paper';
+import { getAuth } from "firebase/auth";
 import { DataTable } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
@@ -13,7 +12,7 @@ const BuyProducts = ({ navigation }) => {
     const [campus, setCampus] = React.useState("")
     const [classroom, setClassroom] = React.useState("")
     const [subTotal, setSubTotal] = React.useState("")
-    const [sendCost, setSendCost] = React.useState(0.25)   
+    const [sendCost, setSendCost] = React.useState(0.25)
     const db = getFirestore()
     const auth = getAuth()
     useEffect(() => {
@@ -46,14 +45,24 @@ const BuyProducts = ({ navigation }) => {
     function payProducts() {
         let x = userDataProducts
         const docRef = doc(db, 'users', auth.currentUser.uid)
+        const productsRef = doc(db, 'productsBought', auth.currentUser.uid)
+        //Actuliza productos comprados del usuario
         updateDoc(docRef, {
             productsBought: arrayUnion(...[{ products: userDataProducts, totalCost: calculateTotal(), campus: campus, classroom: classroom, sendStatus: false }])
         })
         setUserDataProducts([])
         setDoc(doc(db, 'users', auth.currentUser.uid), {
             products: [],
-
         }, { merge: true })
+        //Manda los datos a la colección y actualiza el arreglo
+        addDoc(collection(db, 'productsBought'), {
+            products: userDataProducts,
+            totalCost: calculateTotal(),
+            user: auth.currentUser.uid
+        })
+        /*    setDoc(doc(db, 'productsBought', auth.currentUser.uid), {
+               productsBought: userDataProducts
+           }, { merge: true }) */
         navigation.navigate('Inicio')
     }
     return (

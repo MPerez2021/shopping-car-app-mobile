@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { View, Text, StyleSheet, Dimensions, FlatList, Image, ScrollView, ToastAndroid } from 'react-native'
+import React, { useEffect, useRef } from 'react'
+import { Animated, View, Text, StyleSheet, Dimensions, FlatList, Image, ScrollView, ToastAndroid } from 'react-native'
 import { getDocs, doc, collection, onSnapshot, getFirestore, setDoc, updateDoc } from "firebase/firestore";
-import { Button, Card, Subheading, Title, Modal, Portal } from 'react-native-paper';
+import { Button, Card, Subheading, Title, Modal, Portal, ActivityIndicator } from 'react-native-paper';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { AntDesign } from '@expo/vector-icons';
 
@@ -14,10 +14,21 @@ const Products = ({ navigation }) => {
     const [userDataProducts, setUserDataProducts] = React.useState([])
     const [counter, setCounter] = React.useState({ data: [] })
     const [visible, setVisible] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
     const db = getFirestore()
-    const auth = getAuth() 
+    const auth = getAuth()
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const moveAnim = useRef(new Animated.Value(0)).current
+
+    // Will change fadeAnim value to 1 in 5 seconds
+
     useEffect(() => {
+        setLoading(false)
         getProductData()
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 2000
+        }).start();
         const getUser = onSnapshot(doc(db, 'users', auth.currentUser.uid), (info) => {
             setUserDataProducts(info.data().products)
             let x = []
@@ -25,10 +36,13 @@ const Products = ({ navigation }) => {
                 x.push(1)
             });
             setCounter({ data: x })
+            setLoading(true)
         })
+
         return () => {
             getUser()
             getProductData()
+
         }
     }, [])
 
@@ -87,12 +101,14 @@ const Products = ({ navigation }) => {
         <View style={styles.container}>
             {userExist ?
                 <View>
-                    <Title style={styles.title}>Te damos la bienvenida {auth.currentUser.displayName}</Title>
-                    <Subheading style={{ color: 'white' }}>Los mejores productos al alcance de tu mano</Subheading>
+                    <Animated.View style={[styles.title, {
+                        opacity: fadeAnim
+                    }]}>
+                        <Title style={styles.title}>Te damos la bienvenida {auth.currentUser.displayName}</Title>
+                        <Subheading style={{ color: 'white' }}>Los mejores productos al alcance de tu mano</Subheading>
+                    </Animated.View>
                 </View> :
-                <View>
-                    <Subheading style={{ color: 'white' }}>Los mejores productos al alcance de tu mano</Subheading>
-                </View>
+                null
             }
             <Portal>
                 <Modal visible={visible} contentContainerStyle={styles.containerStyle} dismissable={false}>
@@ -176,9 +192,9 @@ const Products = ({ navigation }) => {
                 style={{ backgroundColor: '#fd7753', marginBottom: 20 }}
                 onPress={() => navigation.navigate('Local', { screen: 'Store' })}>Comentarios
             </Button>
-            <FlatList
+            {loading ? <FlatList
                 data={productData}
-                renderItem={({ item, index }) =>
+                renderItem={({ item }) =>
                     <View>
                         <Card style={styles.card}>
                             <View style={styles.productCard}>
@@ -205,13 +221,13 @@ const Products = ({ navigation }) => {
                                         Añadir
                                     </Button>
                                 </Card.Actions>
-
                             </View>
                         </Card>
                     </View>
                 }
             /*  keyExtractor={item => item.key} */
-            />
+            /> : <ActivityIndicator animating={true} color={'#fd7753'} />}
+
 
         </View >
     )
@@ -230,7 +246,8 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: "bold",
         textAlign: "center",
-        color: 'white'
+        color: 'white',
+
     },
     card: {
         width: '100%',
@@ -298,7 +315,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         backgroundColor: '#3159b5'
     },
-    deleteButton:{        
+    deleteButton: {
         backgroundColor: '#fd7753'
     }
 })
