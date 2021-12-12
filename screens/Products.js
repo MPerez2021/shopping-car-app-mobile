@@ -97,6 +97,7 @@ const Products = ({ navigation }) => {
         return total.toFixed(2)
     }
 
+
     return (
         <View style={styles.container}>
             {userExist ?
@@ -156,7 +157,7 @@ const Products = ({ navigation }) => {
                                             <Text style={{ color: 'white' }}> $ {calculateTotal()} </Text>
                                         </View>
                                     </View>
-                                    <Button style={styles.payButton} icon="cart-off" mode="contained"
+                                    <Button style={styles.payButton} icon="arrow-right" mode="contained"
                                         onPress={async () => {
                                             setDoc(doc(db, 'users', auth.currentUser.uid), {
                                                 products: userDataProducts
@@ -212,11 +213,15 @@ const Products = ({ navigation }) => {
                                         uppercase={false}
                                         style={{ backgroundColor: '#fd7753' }}
                                         onPress={() => {
-                                            userDataProducts.push({ cost: item.price, name: item.name, image: item.image, key: item.id, quantity: item.quantity })
-                                            setDoc(doc(db, 'users', auth.currentUser.uid), {
-                                                products: userDataProducts
-                                            }, { merge: true })
-                                            ToastAndroid.show(item.name + ' añadido al carrito', ToastAndroid.SHORT)
+                                            if (userDataProducts.findIndex((product) => product.key === item.id) === -1) {
+                                                userDataProducts.push({ cost: item.price, name: item.name, image: item.image, key: item.id, quantity: item.quantity })
+                                                setDoc(doc(db, 'users', auth.currentUser.uid), {
+                                                    products: userDataProducts
+                                                }, { merge: true })
+                                                ToastAndroid.show(item.name + ' añadido al carrito', ToastAndroid.SHORT)
+                                            } else {
+                                                ToastAndroid.show('Ya has añadido este producto antes', ToastAndroid.SHORT)
+                                            }
                                         }}>
                                         Añadir
                                     </Button>

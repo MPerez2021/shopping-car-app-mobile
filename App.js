@@ -119,7 +119,7 @@ export default function App() {
             <Stack.Screen name="Home" component={homePage} options={{
               headerShown: false
             }}></Stack.Screen>
-          }  
+          }
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
