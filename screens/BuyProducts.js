@@ -15,11 +15,15 @@ const BuyProducts = ({ navigation }) => {
     const [sendCost, setSendCost] = React.useState(0.25)
     const [incompleteData, setIncompleteData] = React.useState(false)
     const [visible, setVisible] = React.useState(false);
+    const [idBanner, setIdBnnaer] = React.useState("")
+    const [phoneNumber, setPhoneNumber] = React.useState("")
     const db = getFirestore()
     const auth = getAuth()
     useEffect(() => {
         const getUser = onSnapshot(doc(db, 'users', auth.currentUser.uid), (info) => {
             setUserDataProducts(info.data().products)
+            setPhoneNumber(info.data().phoneNumber);
+            setIdBnnaer(info.data().idBanner);
         })
         return () => {
             getUser()
@@ -68,14 +72,16 @@ const BuyProducts = ({ navigation }) => {
                 totalCost: calculateTotal(),
                 user: {
                     uid: auth.currentUser.uid,
-                    name: auth.currentUser.displayName                    
+                    name: auth.currentUser.displayName
                 },
                 classRoom: classroom,
                 campus: campus,
                 purchaseTime: {
                     date: new Date().toLocaleDateString('es', { year: '2-digit' }),
                     hour: new Date().toLocaleTimeString([], { hour12: true })
-                }
+                },
+                idBanner: idBanner,
+                phoneNumber: phoneNumber
             })
             setVisible(true)
         }
@@ -85,73 +91,74 @@ const BuyProducts = ({ navigation }) => {
 
         <View style={styles.container}>
             <ScrollView>
-                <DataTable>
-                    <DataTable.Header>
-                        <View style={{ width: 20, alignItems: 'flex-start' }}>
-                            <DataTable.Title>
-                                <Text style={{ fontWeight: 'bold' }}>
-                                    #
-                                </Text>
-                            </DataTable.Title>
-                        </View>
-                        <View style={{ width: 150, alignItems: 'flex-start' }}>
-                            <DataTable.Title>
-                                <Text style={{ fontWeight: 'bold' }}>
-                                    Producto
-                                </Text>
-                            </DataTable.Title>
-                        </View>
-                        <View style={{ width: 50 }}>
-                            <DataTable.Title >
-                                <Text style={{ fontWeight: 'bold' }}>
-                                    Cantidad
-                                </Text>
-                            </DataTable.Title>
-                        </View>
-                        <View style={{ width: 90, flexDirection: 'column', marginLeft: 10 }}>
-                            <DataTable.Title>
-                                <Text style={{ fontWeight: 'bold' }}>
-                                    Precio Unitario
-                                </Text>
-                            </DataTable.Title>
-                        </View>
-                        <View style={{ width: 50, alignItems: 'center' }}>
-                            <DataTable.Title>
-                                <Text style={{ fontWeight: 'bold' }}>
-                                    Total
-                                </Text>
-                            </DataTable.Title>
-                        </View>
-                    </DataTable.Header>
-
-                    {userDataProducts.map((product, index) =>
-                        <DataTable.Row>
-                            <View style={{ width: 20, alignItems: 'flex-start' }}>
-                                <DataTable.Cell>
-                                    <Text>{index + 1}</Text>
-                                </DataTable.Cell>
+                <ScrollView horizontal={true}>
+                    <DataTable>
+                        <DataTable.Header>
+                            <View style={{ width: 20, height: 'auto', alignItems: 'flex-start' }}>
+                                <DataTable.Title>
+                                    <Text style={{ fontWeight: 'bold', color: 'black' }}>
+                                        #
+                                    </Text>
+                                </DataTable.Title>
                             </View>
-                            <View style={{ width: 150 }}>
-                                <DataTable.Cell>
-                                    <Text>{product.name}</Text>
-                                </DataTable.Cell>
+                            <View style={{ width: 150, height: 'auto', alignItems: 'flex-start' }}>
+                                <DataTable.Title>
+                                    <Text style={{ fontWeight: 'bold', color: 'black' }}>
+                                        Producto
+                                    </Text>
+                                </DataTable.Title>
                             </View>
-                            <View style={{ width: 50, alignItems: 'center' }}>
-                                <DataTable.Cell numeric>{product.quantity}</DataTable.Cell>
+                            <View style={{ width: 70, height: 'auto', alignItems: 'center' }}>
+                                <DataTable.Title >
+                                    <Text style={{ fontWeight: 'bold', color: 'black' }}>
+                                        Cantidad
+                                    </Text>
+                                </DataTable.Title>
                             </View>
-                            <View style={{ width: 90, alignItems: 'center', marginLeft: 10 }}>
-                                <DataTable.Cell numeric>${product.cost}</DataTable.Cell>
+                            <View style={{ width: 150, height: 'auto', flexDirection: 'column', alignItems: 'center' }}>
+                                <DataTable.Title>
+                                    <Text style={{ fontWeight: 'bold', color: 'black' }}>
+                                        Precio Unitario
+                                    </Text>
+                                </DataTable.Title>
                             </View>
                             <View style={{ alignItems: 'center', width: 50 }}>
-                                <DataTable.Cell numeric>${(product.cost * product.quantity).toFixed(2)}</DataTable.Cell>
+                                <DataTable.Title>
+                                    <Text style={{ fontWeight: 'bold', color: 'black' }}>
+                                        Total
+                                    </Text>
+                                </DataTable.Title>
                             </View>
-                        </DataTable.Row>
-                    )}
-
-                </DataTable>
-
+                        </DataTable.Header>
+                        {userDataProducts.map((product, index) =>
+                            <DataTable.Row>
+                                <View style={{ width: 20, alignItems: 'flex-start' }}>
+                                    <DataTable.Cell>
+                                        <Text style={{ color: 'black' }}>{index + 1}</Text>
+                                    </DataTable.Cell>
+                                </View>
+                                <View style={{ width: 150 }}>
+                                    <DataTable.Cell>
+                                        <Text style={{ color: 'black' }}>{product.name}</Text>
+                                    </DataTable.Cell>
+                                </View>
+                                <View style={{ width: 70, alignItems: 'center' }}>
+                                    <DataTable.Cell numeric>{product.quantity}</DataTable.Cell>
+                                </View>
+                                <View style={{ width: 150, alignItems: 'center' }}>
+                                    <DataTable.Cell numeric style={{ color: 'red' }}>
+                                        <Text style={{ color: 'black' }}>${product.cost}</Text></DataTable.Cell>
+                                </View>
+                                <View style={{ alignItems: 'center', width: 50 }}>
+                                    <DataTable.Cell numeric>
+                                        <Text style={{ color: 'black' }}>${(product.cost * product.quantity).toFixed(2)}</Text></DataTable.Cell>
+                                </View>
+                            </DataTable.Row>
+                        )}
+                    </DataTable>
+                </ScrollView>
                 <View style={{ padding: 20 }} >
-                    <Title>Datos de envío</Title>
+                    <Title style={{ color: 'black' }}>Datos de envío</Title>
                     <View style={{ marginTop: 10 }}>
                         {incompleteData ? <HelperText type="error">
                             *Campo obligatorio
@@ -161,6 +168,7 @@ const BuyProducts = ({ navigation }) => {
                             style={styles.textInput}
                             label="Campus"
                             value={campus}
+                            theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
                             onChangeText={text => setCampus(text)}
                         />
                         {incompleteData ? <HelperText type="error">
@@ -170,41 +178,41 @@ const BuyProducts = ({ navigation }) => {
                             mode="flat"
                             style={styles.textInput}
                             label="Aula"
+                            theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
                             value={classroom}
                             onChangeText={text => setClassroom(text)}
                         />
                     </View>
                     <View style={{ justifyContent: 'flex-end', marginTop: 40 }}>
                         <View style={styles.totalAmount}>
-                            <Text>Subtotal</Text>
-                            <Text>${productSubTotal()}</Text>
+                            <Text style={{ color: 'black' }}>Subtotal</Text>
+                            <Text style={{ color: 'black' }}>${productSubTotal()}</Text>
                         </View>
                         <View style={styles.totalAmount}>
-                            <Text>Costo de envío</Text>
-                            <Text>${sendCost}</Text>
+                            <Text style={{ color: 'black' }}>Costo de envío</Text>
+                            <Text style={{ color: 'black' }}>${sendCost}</Text>
                         </View>
                         <Divider style={{ borderWidth: 0.1, marginBottom: 20 }} />
                         <View style={styles.totalAmount}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Total</Text>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>${calculateTotal()}</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color:'black' }}>Total</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color:'black' }}>${calculateTotal()}</Text>
                         </View>
                         <Button mode="contained" uppercase={true} style={styles.button} onPress={payProducts}>
                             Pagar
                         </Button>
                     </View>
                 </View>
-
                 <Portal>
                     <Dialog visible={visible}>
                         <View style={styles.containerStyle}>
                             <View style={styles.dialogTitle}>
                                 <AntDesign name="checkcircleo" size={24} color="white" style={{ backgroundColor: '#20a779', borderRadius: 50, marginRight: 10 }} />
-                                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                                <Text style={{ fontSize: 14, fontWeight: 'bold', color:'black' }}>
                                     Tu compra ha sido realizada con éxito!
                                 </Text>
                             </View>
                             <View style={{ marginTop: 20 }}>
-                                <Text>Gracias por tu compra, sigue visitando nuestra tienda o revisa todas tus compras </Text>
+                                <Text style={{color:'black'}}>Gracias por tu compra, sigue visitando nuestra tienda o revisa todas tus compras </Text>
                             </View>
                         </View>
                         <Dialog.Actions>
@@ -216,14 +224,15 @@ const BuyProducts = ({ navigation }) => {
                                 }, { merge: true })
                                 setVisible(false)
                             }}>Aceptar</Button>
-                            <Button onPress={() => {
-                                navigation.navigate('Mis compras')
-                                setUserDataProducts([])
-                                setDoc(doc(db, 'users', auth.currentUser.uid), {
-                                    products: [],
-                                }, { merge: true })
-                                setVisible(false)
-                            }}>Mis Compras</Button>
+                            <Button
+                                onPress={() => {
+                                    navigation.navigate('Mis compras')
+                                    setUserDataProducts([])
+                                    setDoc(doc(db, 'users', auth.currentUser.uid), {
+                                        products: [],
+                                    }, { merge: true })
+                                    setVisible(false)
+                                }}>Mis Compras</Button>
                         </Dialog.Actions>
                     </Dialog>
                 </Portal>
@@ -244,9 +253,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     button: {
-        backgroundColor: '#fd7753',
+        backgroundColor: '#00acb6',
         margin: 20,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        color:'white'
     },
     totalAmount: {
         flexDirection: 'row',

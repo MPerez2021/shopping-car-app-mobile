@@ -8,6 +8,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const Scanner = () => {
+    const [hasPermission, setHasPermission] = useState(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
     const [showScanner, setShowScanner] = useState(false)
     const [visible, setVisible] = React.useState(false);
@@ -21,11 +22,6 @@ const Scanner = () => {
         return () => { };
     }, []);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            setShowScanner(false)
-        }, [])
-    )
     function show() {
         setShowScanner(!showScanner)
     }
@@ -41,7 +37,9 @@ const Scanner = () => {
                         totalCost: info.data().totalCost,
                         purchaseTime: info.data().purchaseTime,
                         classRoom: info.data().classRoom,
-                        campus: info.data().campus
+                        campus: info.data().campus,
+                        phoneNumber: info.data().phoneNumber,
+                        idBanner: info.data().idBanner
                     }
                     products.push(docs)
                     setShowScanner(false)
@@ -55,8 +53,8 @@ const Scanner = () => {
     };
     return (
         <View style={styles.container}>
-            <Button icon="qrcode-scan" mode="contained" onPress={show}>
-                QR Scanner
+            <Button icon="qrcode-scan" mode="contained" onPress={show} style={{ backgroundColor: '#002d66' }}>
+                <Text style={{ color: 'white' }}> QR Scanner</Text>
             </Button>
             {showScanner ? <Camera style={styles.camera} type={type} onBarCodeScanned={handleBarCodeScanned}>
             </Camera> : null}
@@ -67,30 +65,43 @@ const Scanner = () => {
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 {products.map(data =>
                                     <View style={{ flexDirection: 'column', width: '70%' }}>
-                                        <Title style={{ fontSize: 30, fontWeight: 'bold' }}>Go Market</Title>
+                                        <Title style={{ fontSize: 30, fontWeight: 'bold', color: 'black' }}>Go Market</Title>
                                         <View style={{ flexDirection: 'row', marginTop: 7 }}>
                                             <View style={{ flexDirection: 'column', width: '50%' }}>
-                                                <Text style={{ fontWeight: 'bold' }}>Fecha</Text>
+                                                <Text style={{ fontWeight: 'bold', color: 'black' }}>Fecha</Text>
                                                 <Text>{data.purchaseTime.date}</Text>
                                             </View>
                                             <View style={{ flexDirection: 'column', width: '50%' }}>
-                                                <Text style={{ fontWeight: 'bold' }}>Hora</Text>
+                                                <Text style={{ fontWeight: 'bold', color: 'black' }}>Hora</Text>
                                                 <Text>{data.purchaseTime.hour}</Text>
                                             </View>
                                         </View>
                                         <View style={{ flexDirection: 'column', marginTop: 7 }}>
-                                            <Text style={{ fontWeight: 'bold' }}>Cliente</Text>
-                                            <Text>{data.user.name}</Text>
+
+                                        </View>
+                                        <View style={{ flexDirection: 'row', marginTop: 7 }}>
+                                            <View style={{ flexDirection: 'column', width: '50%' }}>
+                                                <Text style={{ fontWeight: 'bold', color: 'black' }}>Cliente</Text>
+                                                <Text>{data.user.name}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'column', width: '50%' }}>
+                                                <Text style={{ fontWeight: 'bold', color: 'black' }}>Teléfono</Text>
+                                                <Text>{data.phoneNumber}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={{ flexDirection: 'column', width: '50%', marginTop: 7 }}>
+                                            <Text style={{ fontWeight: 'bold', color: 'black' }}>ID Banner</Text>
+                                            <Text>{data.idBanner}</Text>
                                         </View>
                                     </View>
                                 )}
                                 <View style={styles.imageView}>
                                     <Image
                                         style={{
-                                            width: 100,
-                                            height: 100,
+                                            width: 150,
+                                            height: 150,
                                         }}
-                                        source={require('../assets/logos.png')} />
+                                        source={require('../assets/iconShop.png')} />
                                 </View>
                             </View>
                             <View style={{ marginTop: 10 }}>
@@ -141,22 +152,28 @@ const Scanner = () => {
                                                         <DataTable.Row>
                                                             <View style={{ width: 20, alignItems: 'flex-start' }}>
                                                                 <DataTable.Cell>
-                                                                    <Text>{index + 1}</Text>
+                                                                    <Text style={{ color: 'black' }}>{index + 1}</Text>
                                                                 </DataTable.Cell>
                                                             </View>
                                                             <View style={{ width: 150 }}>
                                                                 <DataTable.Cell numb>
-                                                                    <Text>{data.name}</Text>
+                                                                    <Text style={{ color: 'black' }}>{data.name}</Text>
                                                                 </DataTable.Cell>
                                                             </View>
                                                             <View style={{ width: 50, alignItems: 'center' }}>
-                                                                <DataTable.Cell numeric>{data.quantity}</DataTable.Cell>
+                                                                <DataTable.Cell numeric>
+                                                                    <Text style={{ color: 'black' }}> {data.quantity}</Text>
+                                                                </DataTable.Cell>
                                                             </View>
                                                             <View style={{ width: 90, alignItems: 'center', marginLeft: 10 }}>
-                                                                <DataTable.Cell numeric>${data.cost}</DataTable.Cell>
+                                                                <DataTable.Cell numeric>
+                                                                    <Text style={{ color: 'black' }}>${data.cost}</Text>
+                                                                </DataTable.Cell>
                                                             </View>
                                                             <View style={{ alignItems: 'center', width: 50 }}>
-                                                                <DataTable.Cell numeric>${(data.cost * data.quantity).toFixed(2)}</DataTable.Cell>
+                                                                <DataTable.Cell numeric>
+                                                                    <Text style={{ color: 'black' }}>${(data.cost * data.quantity).toFixed(2)}</Text>
+                                                                </DataTable.Cell>
                                                             </View>
                                                         </DataTable.Row>
                                                     </View>
@@ -169,29 +186,29 @@ const Scanner = () => {
                                     {products.map(data =>
                                         <View style={{ flexDirection: 'column', marginTop: 7 }}>
                                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
-                                                <Text style={{fontSize:20, fontWeight:'bold'}}>Valor Total</Text>
-                                                <Text style={{ fontSize: 15, fontWeight: 'normal' }}> ${data.totalCost}</Text>
+                                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>Valor Total</Text>
+                                                <Text style={{ fontSize: 15, fontWeight: 'normal', color: 'black' }}> ${data.totalCost}</Text>
                                             </View>
                                             <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Entrega</Text>
                                             <View style={{ marginTop: 3, flexDirection: 'row' }}>
-                                                <Text style={{ fontWeight: 'bold' }}>Campus: </Text>
+                                                <Text style={{ fontWeight: 'bold', color: 'black' }}>Campus: </Text>
                                                 <Text>{data.campus}</Text>
                                             </View>
                                             <View style={{ marginTop: 3, flexDirection: 'row' }}>
-                                                <Text style={{ fontWeight: 'bold' }}>Aula: </Text>
+                                                <Text style={{ fontWeight: 'bold', color: 'black' }}>Aula: </Text>
                                                 <Text>{data.classRoom}</Text>
                                             </View>
 
                                         </View>
                                     )}
                                 </View>
-                            </View>                     
-                            <Button 
-                            mode="contained" 
-                            style={{marginTop: 10}}
-                            onPress={() => {
-                                setVisible(false)
-                            }}>
+                            </View>
+                            <Button
+                                mode="contained"
+                                style={{ marginTop: 10, backgroundColor: '#00acb6' }}
+                                onPress={() => {
+                                    setVisible(false)
+                                }}>
                                 Aceptar
                             </Button>
                         </ScrollView>
@@ -204,7 +221,6 @@ const Scanner = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#231e1c',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -225,14 +241,14 @@ const styles = StyleSheet.create({
     },
     imageView: {
         width: '30%',
-        backgroundColor: 'black',
-        alignItems: 'center',
         height: '100%',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        borderRadius: 20,
+        justifyContent:'center'
     },
     tableTitleText: {
         fontWeight: 'bold',
-        color: 'black'
+        color: 'black',
     },
     productsDetail: {
         padding: 20

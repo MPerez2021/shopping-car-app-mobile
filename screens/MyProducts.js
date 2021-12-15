@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { View, StyleSheet, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native'
 import { collection, onSnapshot, getFirestore, query, where, orderBy } from "firebase/firestore";
-import { Button, Modal, Portal, Text, Title, ActivityIndicator } from 'react-native-paper';
+import { Modal, Portal, Text, Title, ActivityIndicator } from 'react-native-paper';
 import { getAuth } from "firebase/auth";
 import QRCode from 'react-native-qrcode-svg';
 
@@ -47,27 +47,23 @@ const MyProducts = () => {
                     style={{
                         height: windowHeight,
                         width: windowWidth,
-                    }} animating={true} color={'#fd7753'}></ActivityIndicator>
+                    }} animating={true} color={'#065a7f'}></ActivityIndicator>
                 :
                 <View style={{ margin: 20 }}>
-                    <Title style={{textAlign:'center', fontSize:20, marginBottom:10}}>ÚlTIMAS COMPRAS</Title>
+                    <Title style={{textAlign:'center', fontSize:20, marginBottom:10, color:'black'}}>ÚlTIMAS COMPRAS</Title>
                     <FlatList data={userDataProductsBought}
                         renderItem={({ item, index }) =>
                             <View style={styles.flatListCard}>
-                                <View style={styles.cardData}>
-                                    {/* <Text>Compra# {index + 1}</Text> */}
-                                    <Text>Campus: {item.campus}</Text>
-                                    <Text>Aula: {item.classRoom}</Text>
-                                    <Text>Fecha: {item.purchaseTime.date}</Text>
-                                    <Text>Hora: {item.purchaseTime.hour}</Text>
-                                    {/*  {item.product.map(data =>
-                                        <Text>{data.cost}</Text>
-                                    )} */}
+                                <View style={styles.cardData}>                    
+                                    <Text style={{color:'black'}}>Campus: {item.campus}</Text>
+                                    <Text style={{color:'black'}}>Aula: {item.classRoom}</Text>
+                                    <Text style={{color:'black'}}>Fecha: {item.purchaseTime.date}</Text>
+                                    <Text style={{color:'black'}}>Hora: {item.purchaseTime.hour}</Text>                                 
                                 </View>
                                 <View style={{ width: '50%', alignItems: 'center' }}>
                                     <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                                        <Title style={{ fontWeight: 'bold' }}>Valor Total</Title>
-                                        <Text style={{ fontSize: 15 }}>$ {item.totalCost}</Text>
+                                        <Title style={{ fontWeight: 'bold', color:'black'}}>Valor Total</Title>
+                                        <Text style={{ fontSize: 15, color:'black' }}>$ {item.totalCost}</Text>
                                     </View>
                                     <View style={{ width: '100%', alignItems: 'center' }}>
                                         <TouchableOpacity onPress={() => {
@@ -90,7 +86,7 @@ const MyProducts = () => {
             <Portal>
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={styles.containerStyle}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center' }}>
-                        <Title style={{ width: 250 }}>Escanea el código para ver el detalle de tu compra</Title>
+                        <Title style={{ width: 250, color: 'black' }}>Escanea el código para ver el detalle de tu compra</Title>
                         <Text style={{ color: 'red' }} onPress={() => {
                             setVisible(false)
                         }}>Cerrar</Text>

@@ -38,11 +38,9 @@ const Products = ({ navigation }) => {
             setCounter({ data: x })
             setLoading(true)
         })
-
         return () => {
             getUser()
             getProductData()
-
         }
     }, [])
 
@@ -106,7 +104,7 @@ const Products = ({ navigation }) => {
                         opacity: fadeAnim
                     }]}>
                         <Title style={styles.title}>Te damos la bienvenida {auth.currentUser.displayName}</Title>
-                        <Subheading style={{ color: 'white' }}>Los mejores productos al alcance de tu mano</Subheading>
+                        <Subheading style={{ marginBottom: 10, color:'black' }}>Los mejores productos al alcance de tu mano</Subheading>
                     </Animated.View>
                 </View> :
                 null
@@ -116,46 +114,43 @@ const Products = ({ navigation }) => {
                     <ScrollView >
                         <View style={styles.modal}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                                <Title style={{ color: 'white' }}>Tus compras</Title>
+                                <Title>Tus compras</Title>
                                 <Text style={{ color: 'red' }} onPress={() => {
                                     setVisible(false)
                                 }}>Cerrar</Text>
                             </View>
                             {userDataProducts.length !== 0 && userDataProducts.map((userData, index) =>
                                 <View style={styles.product}>
-                                    <Image
-                                        style={{ width: 150, height: 150, backgroundColor: '#C2BCBA' }}
-                                        source={{ uri: userData.image }}
-                                        resizeMode="contain" />
+                                    <View style={{ borderRadius: 20, height:160, backgroundColor: '#ffeee8' }}>
+                                        <Image
+                                            style={{  width: 150, height: '100%' }}
+                                            source={{ uri: userData.image }}
+                                            resizeMode="contain" />
+                                    </View>
                                     <View style={styles.productDetail}>
                                         <Title style={styles.productName}>{userData.name}</Title>
                                         <Text style={styles.productPrice}>$ {(userData.cost * counter.data[index]).toFixed(2)}</Text>
                                         <View style={styles.counter}>
-                                            <AntDesign name="minuscircleo" size={24} color="white" onPress={() => minus(index)} />
-                                            <Text style={{ color: 'white', fontSize: 20 }}>{counter.data[index]}</Text>
-                                            <AntDesign name="pluscircleo" size={24} color="white" onPress={() => plus(index)} />
+                                            <AntDesign name="minuscircleo" size={24} color="black" onPress={() => minus(index)} />
+                                            <Text style={{ color: 'black', fontSize: 20 }}>{counter.data[index]}</Text>
+                                            <AntDesign name="pluscircleo" size={24} color="black" onPress={() => plus(index)} />
                                         </View>
                                     </View>
                                 </View>
                             )}
-
                             {userDataProducts.length === 0
                                 ?
                                 <Text style={{ color: 'grey', fontSize: 20, marginBottom: 15, textAlign: 'justify' }}>
                                     Aún no tienes productos en tu carrito, te invitamos que sigas visitando nuestra tienda</Text>
                                 :
                                 <View>
-
-                                    <View style={styles.totalToPay}>
-                                        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                                            <Text style={{ color: 'grey' }}> Productos </Text>
-                                            <Text style={{ color: 'white' }}> {userDataProducts.length} </Text>
-                                        </View>
-
-                                        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                                    <View style={styles.totalToPay}>                                       
+                                            <Text style={{ color: 'black', fontSize: 20 }}> Productos </Text>
+                                            <Text style={{ color: 'black', fontSize: 20  }}> {userDataProducts.length} </Text>                                       
+                                        {/* <View style={{ flexDirection: 'column', alignItems: 'center' }}>
                                             <Text style={{ color: 'grey' }}> Total a pagar </Text>
                                             <Text style={{ color: 'white' }}> $ {calculateTotal()} </Text>
-                                        </View>
+                                        </View> */}
                                     </View>
                                     <Button style={styles.payButton} icon="arrow-right" mode="contained"
                                         onPress={async () => {
@@ -174,23 +169,21 @@ const Products = ({ navigation }) => {
                                         }}>
                                         Borrar Productos
                                     </Button> : null}
-
                                 </View>
                             }
-
-                        </View >
+                        </View>
                     </ScrollView>
                 </Modal>
             </Portal>
             <Button icon="cart" mode="contained"
                 uppercase={false}
-                style={{ backgroundColor: '#fd7753', marginBottom: 20 }}
+                style={{ backgroundColor: '#065a7f', marginBottom: 20 }}
                 onPress={() => setVisible(true)}>
                 Ver carrito {userDataProducts.length > 0 ? userDataProducts.length : null}
             </Button>
             <Button icon="comment-text-multiple-outline" mode="contained"
                 uppercase={false}
-                style={{ backgroundColor: '#fd7753', marginBottom: 20 }}
+                style={{ backgroundColor: '#065a7f', marginBottom: 20 }}
                 onPress={() => navigation.navigate('Local', { screen: 'Store' })}>Comentarios
             </Button>
             {loading ? <FlatList
@@ -201,17 +194,17 @@ const Products = ({ navigation }) => {
                             <View style={styles.productCard}>
                                 <Card.Cover source={{ uri: (item.image) }}
                                     resizeMode="contain"
-                                    style={{ backgroundColor: '#43464C' }} />
+                                    style={{ backgroundColor: '#e6e8ea' }} />
                             </View>
                             <View style={{ display: 'flex', justifyContent: "space-between" }}>
                                 <View style={styles.infoProductCard}>
-                                    <Title style={{ color: 'white', width: 120, flexWrap: 'wrap' }}>{item.name}</Title>
-                                    <Title style={{ color: 'white' }}>$ {item.price}</Title>
+                                    <Title style={{ color: '#4c4d4e', width: 120, flexWrap: 'wrap' }}>{item.name}</Title>
+                                    <Title style={{ color: '#4c4d4e' }}>$ {item.price}</Title>
                                 </View>
                                 <Card.Actions style={{ position: 'absolute', bottom: 0, right: 10 }}>
                                     <Button icon="cart-plus" mode="contained"
                                         uppercase={false}
-                                        style={{ backgroundColor: '#fd7753' }}
+                                        style={{ backgroundColor: '#00acb6', color:'black' }}
                                         onPress={() => {
                                             if (userDataProducts.findIndex((product) => product.key === item.id) === -1) {
                                                 userDataProducts.push({ cost: item.price, name: item.name, image: item.image, key: item.id, quantity: item.quantity })
@@ -231,17 +224,12 @@ const Products = ({ navigation }) => {
                     </View>
                 }
             /*  keyExtractor={item => item.key} */
-            /> : <ActivityIndicator animating={true} color={'#fd7753'} />}
-
-
+            /> : <ActivityIndicator animating={true} color={'#065a7f'} />}
         </View >
     )
 }
-
-
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#231e1c',
         flex: 1,
         padding: 30,
         height: windowHeight,
@@ -251,8 +239,7 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: "bold",
         textAlign: "center",
-        color: 'white',
-
+        color:'black'
     },
     card: {
         width: '100%',
@@ -272,26 +259,22 @@ const styles = StyleSheet.create({
         bottom: 10
     },
     containerStyle: {
-        backgroundColor: '#231e1c',
         marginLeft: 15,
         marginRight: 15
-
     },
     modal: {
-        backgroundColor: '#231e1c',
+        backgroundColor: 'white',
         flex: 1,
         padding: 20,
         height: '100%'
     },
     product: {
-        backgroundColor: '#161719',
         flexDirection: 'row',
         marginBottom: 20,
-        width: '100%'
+        width: '100%',
     },
     productName: {
         fontSize: 24,
-        color: 'white',
         width: 150,
         flexWrap: 'wrap'
     },
@@ -303,7 +286,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginBottom: 20,
         marginTop: 10,
-        color: 'white'
+        color: 'black'
     },
     counter: {
         flexDirection: 'row',
@@ -321,7 +304,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#3159b5'
     },
     deleteButton: {
-        backgroundColor: '#fd7753'
+        backgroundColor: '#bf6a70'
     }
 })
 export default Products

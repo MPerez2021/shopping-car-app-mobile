@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, ToastAndroid, Dimensions, KeyboardAvoidingView } from 'react-native'
+import { View, StyleSheet, ToastAndroid, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native'
 import { Button, HelperText, TextInput, ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/core';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -18,6 +18,8 @@ const Register = ({ navigation }) => {
     const [weakPassword, setWeakPassword] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [userAvatar, setUserAvatar] = React.useState("");
+    const [phoneNumber, setPhoneNumber] = React.useState("")
+    const [idBanner, setIdBanner] = React.useState("")
     const [noPhoto, setNoPhoto] = React.useState(false)
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -43,6 +45,8 @@ const Register = ({ navigation }) => {
             setEmailAlreadyExists(false)
             setWeakPassword(false)
             setLoading(false)
+            setPhoneNumber("")
+            setIdBanner("")
         }, [])
     )
 
@@ -54,7 +58,7 @@ const Register = ({ navigation }) => {
         if (userAvatar === "") {
             setIncompleteData(true)
             setEmailAlreadyExists(false)
-            setWeakPassword(false)    
+            setWeakPassword(false)
             setLoading(false)
         } else {
             createUserWithEmailAndPassword(auth, email, password).then((userCredentials) => {
@@ -64,7 +68,9 @@ const Register = ({ navigation }) => {
                     role: 'client',
                     products: [],
                     productsBought: [],
-                    avatar: userAvatar
+                    avatar: userAvatar,
+                    phoneNumber: phoneNumber,
+                    idBanner: idBanner
                 });
                 updateProfile(auth.currentUser, {
                     displayName: name,
@@ -115,74 +121,91 @@ const Register = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={{ marginBottom: 40 }}>
-                <FontAwesome5 name="user-friends" size={150} color="#fd7753" />
-            </View>
-            {incompleteData ?
-                <HelperText type='error' style={{ marginBottom: 10, color: 'red' }}>
-                    Datos incompletos o incorrectos, por favor verifica tus datos para continuar
-                </HelperText> : null}
-            {emailAlreadyExists ?
-                <HelperText type='error' style={{ marginBottom: 10, color: 'red' }}>
-                    EL email que ingresaste ya existe, por favor intenta con otro correo
-                </HelperText> : null}
-            {weakPassword ?
-                <HelperText type='error' style={{ marginBottom: 10, color: 'red' }}>
-                    La contraseña debe tener al menos 6 caracteres
-                </HelperText> : null}
-            <KeyboardAvoidingView style={{ padding: 10 }} behavior="padding">
-                <TextInput style={styles.textInput}
-                    mode="flat"
-                    placeholder="Ingresa tu nombre"
-                    label="Nombre y Apellido"
-                    left={<TextInput.Icon name="account" color={'white'} />}
-                    theme={{ colors: { primary: 'white', placeholder: 'white', text: 'white', accent: 'white' } }}
-                    value={name}
-                    onChangeText={text => setName(text)} />
-                <TextInput style={styles.textInput}
-                    placeholder="Ingresa tu email"
-                    label="Correo electrónico"
-                    theme={{ colors: { primary: 'white', placeholder: 'white', text: 'white', accent: 'white' } }}
-                    left={<TextInput.Icon name="email" color={'white'} />}
-                    value={email}
-                    onChangeText={text => setEmail(text)} />
-                <TextInput style={styles.textInput}
-                    placeholder="Ingresa tu contraseña"
-                    label="Contraseña"
-                    left={<TextInput.Icon name="lock" color={'white'} />}
-                    theme={{ colors: { primary: 'white', placeholder: 'white', text: 'white', accent: 'white' } }}
-                    value={password}
-                    onChangeText={text => setPassword(text)}
-                    secureTextEntry />
-            </KeyboardAvoidingView>
+        <ScrollView>
+            <View style={styles.container}>
 
+                <View style={{ marginBottom: 40 }}>
+                    <FontAwesome5 name="user-friends" size={150} color="#002d66" />
+                </View>
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: 300 }}>
-                <Button mode="contained" uppercase={false} onPress={openImagePickerAsync} style={{
-                    width: 'auto',
-                    backgroundColor: '#3159b5'
-                }}>
-                    Elegir foto de perfil
-                </Button>
-                {userAvatar ? <View style={{
-                    width: 50
-                }}>
-                    <Avatar.Image size={40} source={{ uri: userAvatar }} />
-                </View> : null}
-            </View>
-            {loading ? <ActivityIndicator animating={true} color={'#fd7753'}></ActivityIndicator> :
-                <Button mode="contained" onPress={register} style={styles.button}>
-                    Registrarse
-                </Button>
-            }
-        </View>
+                {incompleteData ?
+                    <HelperText type='error' style={{ marginBottom: 10, color: 'red' }}>
+                        Datos incompletos o incorrectos, por favor verifica tus datos para continuar
+                    </HelperText> : null}
+                {emailAlreadyExists ?
+                    <HelperText type='error' style={{ marginBottom: 10, color: 'red' }}>
+                        EL email que ingresaste ya existe, por favor intenta con otro correo
+                    </HelperText> : null}
+                {weakPassword ?
+                    <HelperText type='error' style={{ marginBottom: 10, color: 'red' }}>
+                        La contraseña debe tener al menos 6 caracteres
+                    </HelperText> : null}
+                <KeyboardAvoidingView style={{ padding: 10 }} behavior="padding">
+                    <TextInput style={styles.textInput}
+                        mode="flat"
+                        placeholder="Ingresa tu nombre"
+                        label="Nombre y Apellido"
+                        left={<TextInput.Icon name="account" color={'#065a7f'} />}
+                        theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
+                        value={name}
+                        onChangeText={text => setName(text)} />
+                    <TextInput style={styles.textInput}
+                        placeholder="Ingresa tu email"
+                        label="Correo electrónico"
+                        theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
+                        left={<TextInput.Icon name="email" color={'#065a7f'} />}
+                        value={email}
+                        onChangeText={text => setEmail(text)} />
+                    <TextInput style={styles.textInput}
+                        placeholder="Ingresa tu contraseña"
+                        label="Contraseña"
+                        left={<TextInput.Icon name="lock" color={'#065a7f'} />}
+                        theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
+                        value={password}
+                        onChangeText={text => setPassword(text)}
+                        secureTextEntry />
+                    <TextInput style={styles.textInput}
+                        placeholder="Ingresa tu número de teléfono"
+                        label="Teléfono"
+                        left={<TextInput.Icon name="cellphone" color={'#065a7f'} />}
+                        theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
+                        value={phoneNumber}
+                        onChangeText={text => setPhoneNumber(text)}
+                    />
+                    <TextInput style={styles.textInput}
+                        placeholder="BANNER"
+                        label="BANNER"
+                        left={<TextInput.Icon name="pencil-outline" color={'#065a7f'} />}
+                        theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
+                        value={idBanner}
+                        onChangeText={text => setIdBanner(text)}
+                    />  
+                </KeyboardAvoidingView>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: 300 }}>
+                    <Button mode="contained" uppercase={false} onPress={openImagePickerAsync} style={{
+                        width: 'auto',
+                        backgroundColor: '#065a7f'
+                    }}>
+                        Elegir foto de perfil
+                    </Button>
+                    {userAvatar ? <View style={{
+                        width: 50
+                    }}>
+                        <Avatar.Image size={40} source={{ uri: userAvatar }} />
+                    </View> : null}
+                </View>
+                {loading ? <ActivityIndicator animating={true} color={'#065a7f'}></ActivityIndicator> :
+                    <Button mode="contained" onPress={register} style={styles.button}>
+                        Registrarse
+                    </Button>
+                }
+            </View >
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#231e1c',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -195,7 +218,7 @@ const styles = StyleSheet.create({
     button: {
         width: 300,
         marginTop: 20,
-        backgroundColor: '#fd7753',
+        backgroundColor: '#002d66',
         marginBottom: 20
     },
     title: {
@@ -208,9 +231,7 @@ const styles = StyleSheet.create({
     textInput: {
         width: 300,
         height: 60,
-        marginBottom: 10,
-        backgroundColor: '#2e2a29'
-
+        marginBottom: 10
     }
 })
 

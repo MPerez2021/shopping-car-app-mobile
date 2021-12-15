@@ -19,13 +19,11 @@ export function DrawerContent(props) {
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView {...props}>
                 <View style={styles.drawerContent}>
-                    <View style={styles.userInfoSection}>
-                        <View style={{ flexDirection: 'column', marginTop: 20, alignItems: 'center' }}>
-                            <Image style={styles.logo}
-                                source={
-                                    (require('../assets/logos.png'))
-                                } />
-                        </View>
+                    <View style={{ flexDirection: 'row', marginTop: 20, justifyContent: 'center' }}>
+                        <Image style={styles.logo}
+                            source={
+                                (require('../assets/logos.png'))
+                            } />
                     </View>
                     <Drawer.Section style={styles.drawerSection}>
                         <DrawerItem
@@ -54,9 +52,9 @@ export function DrawerContent(props) {
                         />
                         <DrawerItem
                             icon={() => (
-                                <AntDesign name="shoppingcart" size={24} color="white" />
+                                <MaterialIcons name="qr-code-scanner" size={24} color="white" />
                             )}
-                            label="Scanner"
+                            label="QR Scanner"
                             labelStyle={styles.textDrawer}
                             onPress={() => { props.navigation.navigate('Scanner'), props.navigation.closeDrawer() }}
                         />
@@ -78,15 +76,12 @@ export function DrawerContent(props) {
 const styles = StyleSheet.create({
     drawerContent: {
         flex: 1,
-        backgroundColor: '#231e1c',
+        backgroundColor: '#065a7f',
         height: windowHeight
     },
     logo: {
         width: 200,
         height: 200
-    },
-    userInfoSection: {
-        paddingLeft: 20
     },
     title: {
         fontSize: 25,

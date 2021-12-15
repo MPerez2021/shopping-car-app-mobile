@@ -41,10 +41,10 @@ function homePage() {
   return (
     <Drawer.Navigator screenOptions={{
       drawerStyle: {
-        backgroundColor: '#231e1c'
+        backgroundColor: '#065a7f'
       },
       headerStyle: {
-        backgroundColor: '#A24730'
+        backgroundColor: '#065a7f'
       },
       headerTintColor: 'white'
     }} drawerContent={props => <DrawerContent {...props}></DrawerContent>}>
@@ -77,6 +77,12 @@ function homePage() {
   );
 }
 
+function loginAndRegister() {
+  <>
+    <Stack.Screen name="Login" component={Login}></Stack.Screen>
+    <Stack.Screen name="Registro" component={Register}></Stack.Screen>
+  </>
+}
 export default function App() {
 
   const [verifyIfUserExists, setVerifyIfUserExists] = React.useState(false)
@@ -106,10 +112,10 @@ export default function App() {
             backgroundColor: '#231e1c'
           },
           headerStyle: {
-            backgroundColor: '#A24730'
+            backgroundColor: '#065a7f'
           },
           headerTintColor: 'white',
-          presentation: 'transparentModal'
+          presentation: 'modal'
         }}>
           {!verifyIfUserExists ?
             <>
@@ -120,6 +126,7 @@ export default function App() {
               headerShown: false
             }}></Stack.Screen>
           }
+
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
@@ -128,7 +135,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -38,12 +38,12 @@ const Store = () => {
             <View style={styles.header}>
                 <Image style={styles.logo}
                     source={
-                        (require('../assets/logos.png'))
+                        (require('../assets/Icon22.png'))
                     } />
-                <Title style={{ color: 'white', fontSize: 30, marginTop: 10 }}>Proyect Papelería</Title>
+                <Title style={{ fontSize: 30, marginTop: 10 }}>Proyect Papelería</Title>
             </View>
-            <Text style={{ color: 'white', margin: 15, textAlign: 'center' }}>Que te pareció nuestra tienda?, danos tu opinión</Text>
-            <View style={{ justifyContent: 'center', backgroundColor: '#252836', marginLeft: 10, marginRight: 10, borderRadius: 20, paddingBottom: 5 }}>
+            <Text style={{ margin: 15, textAlign: 'center' }}>Que te pareció nuestra tienda?, danos tu opinión</Text>
+            <View style={{ justifyContent: 'center', backgroundColor: '#dfdcdb', marginLeft: 10, marginRight: 10, borderRadius: 20, paddingBottom: 5 }}>
                 <KeyboardAvoidingView behavior="padding">
                     <TextInput style={styles.textInput}
                         label="Escibe tu comentario"
@@ -53,11 +53,11 @@ const Store = () => {
                         dense={true}
                         selectionColor='#fd7753'
                         underlineColor='transparent'
-                        theme={{ colors: { primary: 'grey', placeholder: 'grey', text: 'white' } }}
+                        theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
                         right={
                             <TextInput.Icon name="send-outline"
                                 style={{ alignItems: 'center' }}
-                                color='white'
+                                color='black'
                                 onPress={async () => {
                                     addDoc(collection(db, 'comments'), {
                                         comment: commentText,
@@ -76,42 +76,37 @@ const Store = () => {
                     />
                 </KeyboardAvoidingView>
             </View>
-
             {
                 allCommentsData.length > 0 ?
                     <ScrollView>
                         {allCommentsData.map((comment) =>
-                            <View style={{ backgroundColor: '#231e1c' }}>
-                                <View style={styles.commentCard}>
-                                    <View style={styles.userPhoto}>
-                                        <Avatar.Image size={35} source={{ uri: comment.user.avatar }} />
+                            <View style={styles.commentCard}>
+                                <View style={styles.userPhoto}>
+                                    <Avatar.Image size={35} source={{ uri: comment.user.avatar }} />
+                                </View>
+                                <View style={styles.userCommentText}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ color: 'white', marginRight: 20 }}>{comment.user.name}</Text>
+                                        <Text style={styles.text}>{comment.createdAt.date}</Text>
                                     </View>
-                                    <View style={styles.userCommentText}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <Text style={{ color: 'white', marginRight: 20 }}>{comment.user.name}</Text>
-                                            <Text style={styles.text}>{comment.createdAt.date}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Text style={styles.text}>{comment.comment}</Text>
-                                            {auth.currentUser.uid === comment.user.uid ?
-                                                <FontAwesome5 name="trash" size={10} style={{ marginLeft: 5 }} color="#fd7753" onPress={() => {
-                                                    deleteDoc(doc(db, 'comments', comment.commentId))
-                                                }} />
-                                                : null
-                                            }
-                                        </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Text style={styles.text}>{comment.comment}</Text>
+                                        {auth.currentUser.uid === comment.user.uid ?
+                                            <FontAwesome5 name="trash" size={10} style={{ marginLeft: 5 }} color="#fd7753" onPress={() => {
+                                                deleteDoc(doc(db, 'comments', comment.commentId))
+                                            }} />
+                                            : null
+                                        }
                                     </View>
                                 </View>
                             </View>
                         )}
                     </ScrollView> :
-                    <View style={{marginTop:10}}>
-                        {!loading ? <ActivityIndicator animating={true} color={'#fd7753'} /> : <Text style={{ color: '#717589', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
+                    <View style={{ marginTop: 10 }}>
+                        {!loading ? <ActivityIndicator animating={true} color={'#065a7f'} /> : <Text style={{ color: '#717589', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
                             Sé el primero en dejar un comentario
                         </Text>}
-
                     </View>
-
             }
         </View>
     )
@@ -120,7 +115,6 @@ const Store = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#231e1c',
         height: windowHeight,
         width: windowWidth
     },
@@ -131,7 +125,6 @@ const styles = StyleSheet.create({
     header: {
         alignItems: 'center',
         marginTop: 20
-
     },
     textInput: {
         width: 350,
@@ -154,15 +147,14 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         padding: 10,
         marginRight: 50,
-        backgroundColor: '#252836',
+        backgroundColor: '#065a7f',
         borderTopLeftRadius: 0,
         borderTopEndRadius: 20,
         borderBottomLeftRadius: 20,
         borderBottomEndRadius: 20
     },
     text: {
-        color: '#717589',
-
+        color: '#d9d7d6',
     }
 
 });

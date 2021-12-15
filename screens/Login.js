@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Text, Dimensions, KeyboardAvoidingView } from 'react-native'
+import { View, StyleSheet, Text, Dimensions, KeyboardAvoidingView, Image } from 'react-native'
 import { Button, HelperText, TextInput, Subheading, Title, ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/core';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,7 +18,7 @@ const Login = ({ navigation }) => {
         signInWithEmailAndPassword(auth, email, password).then(() => {
             navigation.navigate('Inicio')
             setLoading(false)
-        }).catch(error => {           
+        }).catch(error => {
             if (error.code === 'auth/user-not-found') {
                 setVerifyUser(true)
                 setLoading(false)
@@ -39,10 +39,14 @@ const Login = ({ navigation }) => {
     )
     return (
         <View style={styles.container}>
-            <MaterialCommunityIcons name="shield-account" size={150} color="#fd7753" />
+            {/* <MaterialCommunityIcons name="shield-account" size={150} color="#002d66" /> */}
+            <Image style={styles.logo}
+                source={
+                    (require('../assets/logos.png'))
+                } />
             <View>
                 <Title style={styles.title}>Bienvenido</Title>
-                <Subheading style={{ marginBottom: 20, color: 'white' }}>Inicia sesión para continuar</Subheading>
+                <Subheading style={{ marginBottom: 20 }}>Inicia sesión para continuar</Subheading>
             </View>
             {verifyUser ? <HelperText type="error" style={styles.helperTextInputs}>
                 Usuario no encontrado, por favor verifica tus datos
@@ -56,35 +60,34 @@ const Login = ({ navigation }) => {
                     placeholder="Ingresa tu email"
                     label="Correo electrónico"
                     value={email}
-                    theme={{ colors: { primary: 'white', placeholder: 'white', text: 'white', accent: 'white' } }}
+                    theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
                     onChangeText={text => setEmail(text)}
-                    left={<TextInput.Icon name="email" color={'white'} />} />
+                    left={<TextInput.Icon name="email" color={'#065a7f'} />} />
                 <TextInput style={styles.textInput}
                     mode="flat"
                     placeholder="Ingresa tu contraseña"
                     label="Contraseña"
-                    theme={{ colors: { primary: 'white', placeholder: 'white', text: 'white', accent: 'white' } }}
+                    theme={{ colors: { primary: '#065a7f', placeholder: 'grey', text: 'black' } }}
                     secureTextEntry
                     value={password}
-                    left={<TextInput.Icon name="lock" color={'white'} />}
+                    left={<TextInput.Icon name="lock" color={'#065a7f'} />}
                     onChangeText={text => setPassword(text)}
                 />
             </KeyboardAvoidingView>
-            {loading ? <ActivityIndicator animating={true} color={'#fd7753'}></ActivityIndicator> :
+            {loading ? <ActivityIndicator animating={true} color={'#065a7f'}></ActivityIndicator> :
                 <Button mode="contained" uppercase={true} style={styles.button} onPress={signIn}>
                     Iniciar Sesión
                 </Button>
             }
-            <HelperText type="info" visible={true} style={{ color: 'white' }}>
-                No tienes una cuenta? <Text style={{ color: '#fd7753' }}
-                    onPress={() => navigation.navigate('Registro', { screen: 'Register' })}>Registrate aquí</Text>
+            <HelperText type="info" visible={true} style={{ color: 'black' }}>
+                No tienes una cuenta? <Text style={{ color: '#002d66', fontWeight: 'bold' }}
+                    onPress={() => navigation.navigate('Registro')}>Registrate aquí</Text>
             </HelperText>
         </View>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#231e1c',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -95,7 +98,7 @@ const styles = StyleSheet.create({
     button: {
         width: 300,
         marginTop: 20,
-        backgroundColor: '#fd7753',
+        backgroundColor: '#002d66',
         marginBottom: 20
     },
     title: {
@@ -103,17 +106,22 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center",
         marginTop: 10,
-        color: 'white'
+        color: 'black'
     },
     textInput: {
         width: 300,
         height: 60,
-        marginBottom: 10,
-        backgroundColor: '#2e2a29'
+        marginBottom: 10
     },
     helperTextInputs: {
         marginBottom: 10,
         color: 'red'
+    },
+    logo: {
+        width: 200,
+        height: 200,
+        backgroundColor:'#065a7f',
+        borderRadius: 20
     }
 })
 export default Login
